@@ -2,19 +2,24 @@
 
 require 'rake/testtask'
 
-CODE = 'lib/poke_lib'
-
 task :default do
   puts `rake -T`
 end
 
-desc 'Run tests once'
+desc 'Run unit and integration tests'
 Rake::TestTask.new(:spec) do |t|
-  t.pattern = 'spec/*_spec.rb'
+  t.pattern = 'spec/**/*_spec.rb'
   t.warning = false
 end
 
-desc 'Keep rerunning tests upon changes'
+# NOTE: run `rake run:test` in another process
+desc 'Run acceptance tests'
+Rake::TestTask.new(:spec_accept) do |t|
+  t.pattern = 'spec/tests_acceptance/*_acceptance.rb'
+  t.warning = false
+end
+
+desc 'Keep rerunning unit/integration tests upon changes'
 task :respec do
   sh "rerun -c 'rake spec' --ignore 'coverage/*'"
 end
@@ -24,39 +29,47 @@ task :rerack do
   sh "rerun -c rackup --ignore 'coverage/*'"
 end
 
+namespace :run do
+  task :dev do
+    sh 'rerun -c "rackup -p 9292"'
+  end
+
+  task :test do
+    sh 'RACK_ENV=test rackup -p 9000'
+  end
+end
+
 namespace :db do
   task :config do
     require 'sequel'
     require_relative 'config/environment' # load config info
-    require_relative 'spec/helpers/database_helper'
 
-    def app
-      MerciDanke::App
-    end
+    @app = MerciDanke::App
   end
 
   desc 'Run migrations'
   task :migrate => :config do
     Sequel.extension :migration
-    puts "Migrating #{app.environment} database to latest"
-    Sequel::Migrator.run(app.DataBase, 'app/infrastructure/database/migrations')
+    puts "Migrating #{@app.environment} database to latest"
+    Sequel::Migrator.run(@app.DB, 'app/infrastructure/database/migrations')
   end
 
   desc 'Wipe records from all tables'
   task :wipe => :config do
+    require_relative 'spec/helpers/database_helper'
     DatabaseHelper.setup_database_cleaner
     DatabaseHelper.wipe_database
   end
 
   desc 'Delete dev or test database file'
   task :drop => :config do
-    if app.environment == :production
+    if @app.environment == :production
       puts 'Cannot remove production database!'
       return
     end
 
-    FileUtils.rm(MerciDanke::App.config.DB_FILENAME)
-    puts "Deleted #{MerciDanke::App.config.DB_FILENAME}"
+    FileUtils.rm(@app.config.DB_FILENAME)
+    puts "Deleted #{@pp.config.DB_FILENAME}"
   end
 end
 
@@ -75,6 +88,8 @@ namespace :vcr do
 end
 
 namespace :quality do
+  CODE = 'app/'
+
   desc 'run all quality checks'
   task all: %i[reek flog rubocop]
 
@@ -83,7 +98,7 @@ namespace :quality do
   end
 
   task :reek do
-    sh 'reek'
+    sh "reek #{CODE}"
   end
 
   task :flog do

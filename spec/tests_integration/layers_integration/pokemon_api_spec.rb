@@ -1,6 +1,7 @@
 # frozen_string_literal: false
 
-require_relative 'helpers/spec_helper'
+require_relative '../../helpers/spec_helper'
+require_relative '../../helpers/vcr_helper.rb'
 
 describe 'Tests Pokemon API library' do
   VCR.configure do |c|
@@ -22,7 +23,7 @@ describe 'Tests Pokemon API library' do
     it 'HAPPY: should provide correct pokemon attributes' do
       # pokemontest = PokemonInf::PokemonApi.new.pokemon(ID)
       pokemontest = MerciDanke::Pokemon::PokemonMapper.new.find(POKE_NAME)
-      
+
       _(pokemontest.origin_id).must_equal CORRECT['id']
       _(pokemontest.poke_name).must_equal CORRECT['name']
       _(pokemontest.height).must_equal CORRECT['height']

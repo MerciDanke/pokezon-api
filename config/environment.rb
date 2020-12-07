@@ -15,6 +15,7 @@ module MerciDanke
     Econfig.root = '.'
 
     use Rack::Session::Cookie, secret: config.SESSION_SECRET
+
     configure :development, :test, :app_test do
       ENV['DATABASE_URL'] = "sqlite://#{config.DB_FILENAME}"
     end
@@ -31,10 +32,10 @@ module MerciDanke
 
     configure do
       require 'sequel'
-      DataBase = Sequel.connect(ENV['DATABASE_URL'])
+      DB = Sequel.connect(ENV['DATABASE_URL'])
 
-      def self.DataBase # rubocop:disable Naming/MethodName
-        DataBase
+      def self.DB # rubocop:disable Naming/MethodName
+        DB
       end
     end
   end
