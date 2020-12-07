@@ -4,7 +4,8 @@ source 'https://rubygems.org'
 # ruby File.read('.ruby-version').strip
 
 # PRESENTATION LAYER
-gem 'slim', '~> 3.0'
+gem 'multi_json'
+gem 'roar'
 
 # APPLICATION LAYER
 # Web application related
@@ -29,7 +30,6 @@ gem 'http', '~> 4.0'
 
 # Database
 gem 'hirb', '~> 0.7'
-gem 'hirb-unicode'
 gem 'sequel', '~> 5.0'
 
 group :development, :test do
@@ -41,7 +41,7 @@ group :production do
   gem 'pg', '~> 1.2'
 end
 
-# Testing
+# TESTING
 group :test do
   gem 'minitest', '~> 5.0'
   gem 'minitest-rg', '~> 5.0'
@@ -49,27 +49,26 @@ group :test do
   gem 'simplecov', '~> 0'
   gem 'vcr', '~> 6.0'
   gem 'webmock', '~> 3.0'
-
-  gem 'webdrivers'
-  gem 'headless', '~> 2.3'
-  gem 'page-object', '~> 2.2'
-  gem 'watir', '~> 6.17'
 end
 
 group :development, :test do
   gem 'rerun', '~> 0.13'
 end
 
-# Debugging: see https://stackify.com/ruby-debugger-using-visual-studio-code/
-gem 'debase', '~> 0.2'
-gem 'ruby-debug-ide', '~> 0.7'
+# DEBUGGING
+group :development do
+  # Debugging: see https://stackify.com/ruby-debugger-using-visual-studio-code/
+  gem 'debase', '~> 0.2'
+  gem 'ruby-debug-ide', '~> 0.7'
+end
 
-# Quality
+# QUALITY
 group :development, :test do
   gem 'flog'
   gem 'reek'
-  gem 'rubocop'
+  gem 'rubocop', '~> 1.4'
 end
 
-# Utilities
+# UTILITIES
+gem 'rack-test' # can also be used to diagnose production
 gem 'rake', '~> 13.0'

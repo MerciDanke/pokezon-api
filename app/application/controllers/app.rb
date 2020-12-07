@@ -1,9 +1,7 @@
-# frozen_string_literal: false
+# frozen_string_literal: true
 
 require 'roda'
-require 'slim'
-require 'slim/include'
-require_relative 'helpers.rb'
+require_relative 'helpers'
 
 module MerciDanke
   # Web App
@@ -12,59 +10,22 @@ module MerciDanke
 
     plugin :flash
     plugin :all_verbs # allows DELETE and other HTTP verbs beyond GET/POST
-    plugin :render, engine: 'slim', views: 'app/presentation/view_html'
-    plugin :assets, css: 'style.css', path: 'app/presentation/assets'
     plugin :halt
-
     use Rack::MethodOverride # for other HTTP verbs (with plugin all_verbs)
 
     route do |routing|
-      routing.assets # load CSS
+      response['Content-Type'] = 'application/json'
 
       # GET /
       routing.root do
-        advance_hash = {
-          :'color' => '',
-          :'type_name' => '',
-          :'habitat' => '',
-          :'weight' => '',
-          :'height' => ''
-        }
+        message = "MerciDanke API v1 at /api/v1/ in #{App.environment} mode"
 
-        session[:watching] ||= []
-        if session[:watching].count > 40
-          session[:watching] = session[:watching][0..39]
-        end
-        result = Service::ListProducts.new.call(session[:watching])
+        result_response = Representer::HttpResponse.new(
+          Response::ApiResult.new(status: :ok, message: message)
+        )
 
-        if result.failure?
-          flash[:error] = result.failure
-        else
-          products = result.value!
-          if products.none?
-            flash.now[:notice] = 'Add a Amazon product to get started'
-          end
-        end
-
-        5.times do |num|
-          break if Database::PokemonOrm.find(id: 5)
-
-          pokemons = Pokemon::PokemonMapper.new.find((num + 1).to_s)
-          SearchRecord::ForPoke.entity(pokemons).create(pokemons)
-        end
-
-        pokemon_all = SearchRecord::ForPoke.klass(Entity::Pokemon).all
-        2.times do |num|
-          break unless SearchRecord::For.klass(Entity::Product).all.length.zero?
-          amazon_products = Amazon::ProductMapper.new.find(pokemon_all[num].poke_name, MerciDanke::App.config.API_KEY)
-          amazon_products.map do |product|
-            SearchRecord::For.entity(product).create(product)
-          end
-        end
-        popularities = Popularities.new(pokemon_all).call
-
-        viewable_pokemons = Views::PokemonsList.new(pokemon_all, advance_hash, popularities)
-        view 'home', locals: { pokemons: viewable_pokemons }
+        response.status = result_response.http_status_code
+        result_response.to_json
       end
 
       routing.on 'plus_like' do

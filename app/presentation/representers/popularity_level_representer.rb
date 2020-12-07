@@ -1,10 +1,10 @@
 # frozen_string_literal: true
 
-require 'dry-types'
-require 'dry-struct'
+require 'roar/decorator'
+require 'roar/json'
 
 module MerciDanke
-  module Entity
+  module Representer
     # 4 popularity level
     class PopularityLevel
       include Calculate::PopularityCalculator
