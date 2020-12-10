@@ -14,11 +14,15 @@ module MerciDanke
 
       private
 
+      POKE_ERR_MSG = 'Could not find that pokemon!'
+      AM_ERR_MSG = 'Amazon products have some unknown problems. Please try again!'
+      DB_ERR_MSG = 'Having trouble accessing the database'
+
       def find_pokemon(input)
-        pokemon = correct_pokemon_name(input)
+        pokemon = correct_pokemon_name(input[:poke_name])
         Success(pokemon)
       rescue StandardError
-        Failure('Could not find that pokemon!')
+        Failure(Response::ApiResult.new(status: :not_found, message: POKE_ERR_MSG))
       end
 
       def find_products(input)
@@ -31,7 +35,7 @@ module MerciDanke
         end
         Success(get_products)
       rescue StandardError
-        Failure('Amazon products have some unknown problems. Please try again!')
+        Failure(Response::ApiResult.new(status: :not_found, message: AM_ERR_MSG))
       end
 
       def store_products(input)
@@ -41,13 +45,13 @@ module MerciDanke
           else
             input[0]
           end
-        Success(products)
-      rescue StandardError => error
-        puts error.backtrace.join("\n")
-        Failure('Having trouble accessing the database')
+        Success(Response::ApiResult.new(status: :created, message: products))
+      rescue StandardError => e
+        puts e.backtrace.join("\n")
+        Failure(Response::ApiResult.new(status: :internal_error, message: DB_ERR_MSG))
       end
 
-      # following are support methods that other services could use
+      # Support methods for steps
 
       def products_in_amazon(input)
         Amazon::ProductMapper.new.find(input, MerciDanke::App.config.API_KEY)

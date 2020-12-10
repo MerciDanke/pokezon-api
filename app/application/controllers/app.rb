@@ -55,68 +55,88 @@ module MerciDanke
         end
       end
 
-      routing.on 'type' do
-        routing.is do
-          routing.get do
-            color_name = routing.params['color'].nil? ? '' : routing.params['color'].downcase
-            type_name = routing.params['type'].nil? ? '' : routing.params['type'].downcase
-            habitat_name = routing.params['habitat'].nil? ? '' : routing.params['habitat'].downcase
-            low_h = routing.params['low_h'].nil? ? '' : (routing.params['low_h'].downcase).to_f * 10
-            high_h = routing.params['high_h'].nil? ? '' : (routing.params['high_h'].downcase).to_f * 10
-            low_w = routing.params['low_w'].nil? ? '' : (routing.params['low_w'].downcase).to_f * 10
-            high_w = routing.params['high_w'].nil? ? '' : (routing.params['high_w'].downcase).to_f * 10
+      routing.on 'api/v1' do
+        routing.on 'pokemons' do
+          routing.on String do |poke_name|
+            # GET /projects/{owner_name}/{project_name}[/folder_namepath/]
+            routing.get do
+              path_request = Request::PokemonPath.new(poke_name, request)
 
-            advance_hash = {
-              :'color' => color_name,
-              :'type_name' => type_name,
-              :'habitat' => habitat_name,
-              :'weight' => (low_w..high_w),
-              :'height' => (low_h..high_h)
-            }
+              # result = Service::AppraiseProject.new.call(requested: path_request)
 
-            newhash = advance_hash.select { |_key, value| value != '' }
-            newnewhash = newhash.select { |_key, value| value != (0.0..0.0) }
+              # if result.failure?
+              #   failed = Representer::HttpResponse.new(result.failure)
+              #   routing.halt failed.http_status_code, failed.to_json
+              # end
 
-            pokemon = SearchRecord::ForPoke.klass(Entity::Pokemon)
-                .find_all_advances(newnewhash)
-            popularities = Popularities.new(pokemon).call
+              # http_response = Representer::HttpResponse.new(result.value!)
+              # response.status = http_response.http_status_code
 
-            viewable_pokemons = Views::PokemonsList.new(pokemon, advance_hash, popularities)
-            view 'home', locals: { pokemons: viewable_pokemons }
-          end
-        end
-      end
-      routing.on 'products' do
-        routing.is do
-          # GET /products/
-          routing.post do
-            poke_name = routing.params['poke_name'].downcase
-            routing.params['poke_name'] = routing.params['poke_name'].downcase
-            poke_request = Forms::SearchProduct.new.call(routing.params)
-            products_show = Service::ShowProducts.new.call(poke_request)
-
-            if products_show.failure?
-              flash[:error] = products_show.failure
-              routing.redirect '/'
+              # Representer::ProjectFolderContributions.new(
+              #   result.value!.message
+              # ).to_json
             end
+          end
 
-            session[:watching].insert(0, poke_name).uniq!
-            flash[:notice] = 'Pokemon added to your list'
-            routing.redirect "products/#{poke_name}"
+          routing.is do
+            # GET /projects?list={base64 json array of project fullnames}
+            routing.get do
+              list_req = Request::EncodedPokemonList.new(routing.params)
+              result = Service::ListPokemons.new.call(list_request: list_req)
+
+              if result.failure?
+                failed = Representer::HttpResponse.new(result.failure)
+                routing.halt failed.http_status_code, failed.to_json
+              end
+
+              http_response = Representer::HttpResponse.new(result.value!)
+              response.status = http_response.http_status_code
+              Representer::PokemonsList.new(result.value!.message).to_json
+            end
           end
         end
 
-        routing.on String do |poke_name|
-          # GET /products/poke_name, apikey
-          routing.get do
-            # Get pokemon and products from database
-            pokemon = SearchRecord::ForPoke.klass(Entity::Pokemon)
-              .find_full_name(poke_name)
-            products = Service::ShowProducts.new
-              .products_in_database(poke_name)
+        routing.on 'products' do
+          routing.is do
+            # GET /products/
+            routing.post do
+              products_show = Service::ShowProducts.new.call(poke_name: poke_name)
 
-            viewable_products = Views::ProductsList.new(products, poke_name, pokemon)
-            view 'products', locals: { products: viewable_products }
+              if products_show.failure?
+                failed = Representer::HttpResponse.new(result.failure)
+                routing.halt failed.http_status_code, failed.to_json
+              end
+
+              http_response = Representer::HttpResponse.new(result.value!)
+              response.status = http_response.http_status_code
+              Representer::Product.new(result.value!.message).to_json
+            end
+          end
+
+          routing.on String do |poke_name|
+            # GET /products/poke_name, apikey
+            routing.get do
+              # Get pokemon and products from database
+              path_request = Request::PokemonPath.new(poke_name, request)
+              pokemon = SearchRecord::ForPoke.klass(Entity::Pokemon)
+                .find_full_name(poke_name)
+              products = Service::ShowProducts.new
+                .products_in_database(poke_name)
+
+              # result = Service::AppraiseProject.new.call(requested: path_request)
+
+              # if result.failure?
+              #   failed = Representer::HttpResponse.new(result.failure)
+              #   routing.halt failed.http_status_code, failed.to_json
+              # end
+
+              # http_response = Representer::HttpResponse.new(result.value!)
+              # response.status = http_response.http_status_code
+
+              # Representer::ProjectFolderContributions.new(
+              #   result.value!.message
+              # ).to_json
+            end
           end
         end
       end
