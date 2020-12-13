@@ -24,12 +24,9 @@ module MerciDanke
       end
 
       def find_products(pokemon)
-        # poke_popu = Array.new(2)
         products = products_in_database(pokemon[:poke_name])
         popularity = Mapper::Popularities.new(pokemon, products).build_entity
         poke_popu = [pokemon, popularity]
-        # poke_popu[0] = pokemon
-        # poke_popu[1] = popularity
         Response::PokemonPopularity.new(poke_popu[0], poke_popu[1])
           .then do |pokemon_popu|
             Success(Response::ApiResult.new(status: :ok, message: pokemon_popu))
