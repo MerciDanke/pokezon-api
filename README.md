@@ -1,40 +1,24 @@
-# Shopping with Pokémon
-Currently, there are more than 800 types of Pokémon.
-We list all Pokémon’s information(attributes, features, abilities, etc). Besides, we will also list related products(based on price and rating) that sells on Amazon. For example, if you are browsing Pikachu's information, you can also see the products of Pikachu in the same page.
-## Our features(Domain value)
-Problems to be solved:
-While understanding the characteristics of different Pokémon, explore different products, and can search for Pokémon or products according to personal needs.
-- You can search for Pokémon according to type, color, habitat, height, weight
-- You can filter products based on the price and rating of the product
-## Language of the Domain
-original JSON description -> **our YAML description**
+# Pokézon Web API
+Web API that combines pokemon and related Amazon products to ranked each pokemon's popularity level
+## Routes
+### Root check
+`GET /`
 
-Pokémon
-- id -> **id**
-- name -> **name**
-- abilities/ability -> **abilities**
-- height(m) -> **height**
-- weight(kg) -> **weight**
-- types -> **types**
-- forms-url -> **back_default** ; **back_shiny** ; **front_default** ; **front_shiny**
-- speices-url -> **color** ; **flavor_text_entries** ; **genera** ; **habitat**
+Status:
+- 200: API server running (happy)
 
-Amazon products
-- results -> **product<index>**
-- title -> **title**
-- link -> **link**
-- image -> **image**
-- rating -> **rating**
-- ratingTotal -> **ratingTotal**
-- prices/currency -> **prices/currency**
-- prices/price -> **prices/price**
+### Pokemon intro and its popularity
+`GET /pokemons/{poke_name}`
 
-## Short-term usability goals
-- Pull data from Amazon API and Pokémon API
-- Classify Pokémon data by type, color, habitat, height and weight
-- Map different type, color, habitat, height and weight of pokémons to products
-- Filter the products by different conditions
-- Display Pokémon details with related products at the same time
+Status
+- 200: appraisal returned (happy)
+- 404: pokemon not found (sad)
+- 500: problems finding that pokemon's Amazon products in db or popularity (bad)
 
-## Long-term goals
-- Perform static analysis of folders/files: e.g., flog, rubocop, reek for Ruby
+### Store Amazon products
+`POST /products/{poke_name}`
+
+Status
+- 201: products stored (happy)
+- 404: pokemon not found (sad)
+- 500: problems storing the products (bad)
