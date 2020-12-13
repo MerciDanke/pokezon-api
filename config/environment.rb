@@ -1,12 +1,12 @@
 # frozen_string_literal: true
 
 require 'roda'
-require 'yaml'
+# require 'yaml'
 require 'econfig'
 require 'delegate'
 
 module MerciDanke
-  # Configuration for the App
+  # Environment-specific configuration
   class App < Roda
     plugin :environments
 
@@ -14,7 +14,7 @@ module MerciDanke
     Econfig.env = environment.to_s
     Econfig.root = '.'
 
-    use Rack::Session::Cookie, secret: config.SESSION_SECRET
+    # use Rack::Session::Cookie, secret: config.SESSION_SECRET
 
     configure :development, :test, :app_test do
       ENV['DATABASE_URL'] = "sqlite://#{config.DB_FILENAME}"
