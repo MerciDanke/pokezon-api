@@ -5,6 +5,7 @@ require 'roar/json'
 
 require_relative 'type_representer'
 require_relative 'ability_representer'
+require_relative 'evochain_representer'
 
 module MerciDanke
   module Representer
@@ -28,7 +29,7 @@ module MerciDanke
       property :flavor_text_entries
       property :genera
       # Evochain
-      property :evochain
+      property :evochain, extend: Representer::Evochain, class: OpenStruct
       # Ability
       collection :abilities, extend: Representer::Ability, class: OpenStruct
       property :poke_likes
