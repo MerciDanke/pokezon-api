@@ -1,10 +1,13 @@
-# frozen_string_literal: false
+# frozen_string_literal: true
+
+require 'roar/decorator'
+require 'roar/json'
 
 module MerciDanke
-  module Entity
+  module Representer
     # Represents about pokemons' type
-    class Type < Dry::Struct
-      include Dry.Types
+    class Type < Roar::Decorator
+      include Roar::JSON
 
       property :type_name
     end

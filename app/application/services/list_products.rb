@@ -8,15 +8,13 @@ module MerciDanke
     class ListProducts
       include Dry::Monads::Result::Mixin
 
-      private
+      # private
 
       DB_ERR = 'list_products:Could not access database'
 
-      def call(pokenames)
-        products = SearchRecord::For.klass(Entity::Product)
-          .find_full_names(pokenames)
-
-        Success(products)
+      def call(poke_name)
+        products = SearchRecord::For.klass(Entity::Product).find_full_name(poke_name)
+        Response::ProductsList.new(products).then { |product| Success(Response::ApiResult.new(status: :ok, message: product)) }
       rescue StandardError
         Failure(Response::ApiResult.new(status: :internal_error, message: DB_ERR))
       end
