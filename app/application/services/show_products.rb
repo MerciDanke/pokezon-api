@@ -28,6 +28,7 @@ module MerciDanke
 
         products =
           if db_products.length.zero?
+            puts 'go to amazon'
             am_products = products_in_amazon(input[:poke_name])
             am_products.map { |prod| SearchRecord::For.entity(prod).create(prod) }
           else
