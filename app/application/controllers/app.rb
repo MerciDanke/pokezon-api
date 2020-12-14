@@ -56,6 +56,26 @@ module MerciDanke
       # end
 
       routing.on 'api/v1' do
+        routing.on 'products' do
+          routing.on String do |poke_name|
+            # GET /products/{poke_name}
+            routing.get do
+              path_request = Request::ProductPath.new(poke_name, request)
+              result = Service::ShowProducts.new.call(requested: path_request)
+
+              if result.failure?
+                failed = Representer::HttpResponse.new(result.failure)
+                routing.halt failed.http_status_code, failed.to_json
+              end
+
+              http_response = Representer::HttpResponse.new(result.value!)
+              response.status = http_response.http_status_code
+
+              Representer::ProductsList.new(result.value!.message).to_json
+            end
+          end
+        end
+
         routing.on 'pokemons' do
           routing.on String do |poke_name|
             # GET /pokemon/{poke_name}
@@ -77,67 +97,6 @@ module MerciDanke
               ).to_json
             end
           end
-
-        #   routing.is do
-        #     # GET /projects?list={base64 json array of project fullnames}
-        #     routing.get do
-        #       list_req = Request::EncodedPokemonList.new(routing.params)
-        #       result = Service::ListPokemons.new.call(list_request: list_req)
-
-        #       if result.failure?
-        #         failed = Representer::HttpResponse.new(result.failure)
-        #         routing.halt failed.http_status_code, failed.to_json
-        #       end
-
-        #       http_response = Representer::HttpResponse.new(result.value!)
-        #       response.status = http_response.http_status_code
-        #       Representer::PokemonsList.new(result.value!.message).to_json
-        #     end
-        #   end
-        # end
-
-        # routing.on 'products' do
-        #   routing.is do
-        #     # GET /products/
-        #     routing.post do
-        #       products_show = Service::ShowProducts.new.call(poke_name: poke_name)
-
-        #       if products_show.failure?
-        #         failed = Representer::HttpResponse.new(result.failure)
-        #         routing.halt failed.http_status_code, failed.to_json
-        #       end
-
-        #       http_response = Representer::HttpResponse.new(result.value!)
-        #       response.status = http_response.http_status_code
-        #       Representer::Product.new(result.value!.message).to_json
-        #     end
-        #   end
-
-          # routing.on String do |poke_name|
-          #   # GET /products/poke_name, apikey
-          #   routing.get do
-          #     # Get pokemon and products from database
-          #     path_request = Request::PokemonPath.new(poke_name, request)
-          #     pokemon = SearchRecord::ForPoke.klass(Entity::Pokemon)
-          #       .find_full_name(poke_name)
-          #     products = Service::ShowProducts.new
-          #       .products_in_database(poke_name)
-
-          #     # result = Service::AppraiseProject.new.call(requested: path_request)
-
-          #     # if result.failure?
-          #     #   failed = Representer::HttpResponse.new(result.failure)
-          #     #   routing.halt failed.http_status_code, failed.to_json
-          #     # end
-
-          #     # http_response = Representer::HttpResponse.new(result.value!)
-          #     # response.status = http_response.http_status_code
-
-          #     # Representer::ProjectFolderContributions.new(
-          #     #   result.value!.message
-          #     # ).to_json
-          #   end
-          # end
         end
       end
     end

@@ -9,46 +9,34 @@ module MerciDanke
       include Dry::Transaction
 
       step :find_pokemon
-      step :find_products
-      step :store_products
+      step :find_store_products
 
       private
 
       POKE_ERR_MSG = 'Could not find that pokemon!'
       AM_ERR_MSG = 'Amazon products have some unknown problems. Please try again!'
-      DB_ERR_MSG = 'Having trouble accessing the database'
 
       def find_pokemon(input)
-        pokemon = correct_pokemon_name(input[:poke_name])
+        pokemon = correct_pokemon_name(input[:requested].poke_name)
         Success(pokemon)
       rescue StandardError
         Failure(Response::ApiResult.new(status: :not_found, message: POKE_ERR_MSG))
       end
 
-      def find_products(input)
-        get_products = Array.new(2)
-        products = products_in_database(input[:poke_name])
-        if products.length.zero?
-          get_products[1] = products_in_amazon(input[:poke_name])
-        else
-          get_products[0] = products
-        end
-        Success(get_products)
+      def find_store_products(input)
+        db_products = products_in_database(input[:poke_name])
+
+        products =
+          if db_products.length.zero?
+            am_products = products_in_amazon(input[:poke_name])
+            am_products.map { |prod| SearchRecord::For.entity(prod).create(prod) }
+          else
+            db_products
+          end
+
+        Response::ProductsList.new(products).then { |product| Success(Response::ApiResult.new(status: :ok, message: product)) }
       rescue StandardError
         Failure(Response::ApiResult.new(status: :not_found, message: AM_ERR_MSG))
-      end
-
-      def store_products(input)
-        products =
-          if (new_prods = input[1])
-            new_prods.map { |prod| SearchRecord::For.entity(prod).create(prod) }
-          else
-            input[0]
-          end
-        Success(Response::ApiResult.new(status: :created, message: products))
-      rescue StandardError => e
-        puts e.backtrace.join("\n")
-        Failure(Response::ApiResult.new(status: :internal_error, message: DB_ERR_MSG))
       end
 
       # Support methods for steps
@@ -58,7 +46,7 @@ module MerciDanke
       end
 
       def correct_pokemon_name(input)
-        Pokemon::PokemonMapper.new.find(input[:poke_name])
+        Pokemon::PokemonMapper.new.find(input)
       end
 
       public

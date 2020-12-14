@@ -1,16 +1,16 @@
 ---
 development:
-  API_HOST: http://localhost:9000
+  API_HOST: http://localhost:9292
   # Infrastructure
   DB_FILENAME: app/infrastructure/database/local/dev.db
 
 test:
-  API_HOST: http://localhost:9090
+  API_HOST: http://localhost:9292
   # Infrastructure
   DB_FILENAME: app/infrastructure/database/local/test.db
 
 app_test:
-  API_HOST: http://localhost:9090
+  API_HOST: http://localhost:9292
   # Infrastructure
   DB_FILENAME: app/infrastructure/database/local/test.db
 production:

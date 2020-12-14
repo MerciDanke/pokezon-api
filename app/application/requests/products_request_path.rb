@@ -7,14 +7,9 @@ module MerciDanke
       def initialize(poke_name, request)
         @poke_name = poke_name
         @request = request
-        @path = request.remaining_path
       end
 
       attr_reader :poke_name
-
-      def product_fullname
-        @request.captures.join '/'
-      end
     end
   end
 end
