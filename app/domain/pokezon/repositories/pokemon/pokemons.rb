@@ -18,6 +18,13 @@ module MerciDanke
         rebuild_entity(db_pokemon)
       end
 
+      def self.find_id(poke_id)
+        db_pokemon = Database::PokemonOrm
+          .where(id: poke_id)
+          .first
+        rebuild_entity(db_pokemon)
+      end
+
       def self.find_all_advances(hash)
         if hash.key?(:'type_name')
           db_pokemons = Database::PokemonOrm
