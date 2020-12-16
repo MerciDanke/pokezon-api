@@ -15,6 +15,7 @@ module MerciDanke
       include Roar::Hypermedia
       include Roar::Decorator::HypermediaConsumer
 
+      property :id
       property :origin_id
       property :poke_name
       collection :types, extend: Representer::Type, class: OpenStruct

@@ -18,7 +18,11 @@ module MerciDanke
 
       def find_pokemon(input)
         pokemon = correct_pokemon_name(input[:requested].poke_name)
-        Success(pokemon)
+        if pokemon
+          Success(pokemon)
+        else
+          Failure(Response::ApiResult.new(status: :not_found, message: POKE_ERR_MSG))
+        end
       rescue StandardError
         Failure(Response::ApiResult.new(status: :not_found, message: POKE_ERR_MSG))
       end
@@ -28,7 +32,6 @@ module MerciDanke
 
         products =
           if db_products.length.zero?
-            puts 'go to amazon'
             am_products = products_in_amazon(input[:poke_name])
             am_products.map { |prod| SearchRecord::For.entity(prod).create(prod) }
           else
@@ -47,10 +50,8 @@ module MerciDanke
       end
 
       def correct_pokemon_name(input)
-        Pokemon::PokemonMapper.new.find(input)
+        SearchRecord::ForPoke.klass(Entity::Pokemon).find_full_name(input)
       end
-
-      public
 
       def products_in_database(input)
         SearchRecord::For.klass(Entity::Product)

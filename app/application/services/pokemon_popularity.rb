@@ -17,8 +17,12 @@ module MerciDanke
       DB_ERR_MSG = 'Having trouble accessing the database'
 
       def find_pokemon(input)
-        pokemon = correct_pokemon_name(input[:requested].poke_name)
-        Success(pokemon)
+        pokemon = correct_pokemon_id(input[:requested].poke_id)
+        if pokemon
+          Success(pokemon)
+        else
+          Failure(Response::ApiResult.new(status: :not_found, message: POKE_ERR_MSG))
+        end
       rescue StandardError
         Failure(Response::ApiResult.new(status: :not_found, message: POKE_ERR_MSG))
       end
@@ -37,12 +41,9 @@ module MerciDanke
 
       # Support methods for steps
 
-      def correct_pokemon_name(input)
-        Pokemon::PokemonMapper.new.find(input)
-        SearchRecord::ForPoke.klass(Entity::Pokemon).find_full_name(input)
+      def correct_pokemon_id(input)
+        SearchRecord::ForPoke.klass(Entity::Pokemon).find_id(input)
       end
-
-      public
 
       def products_in_database(input)
         SearchRecord::For.klass(Entity::Product)
