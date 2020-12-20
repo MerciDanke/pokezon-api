@@ -2,6 +2,7 @@
 
 require 'roar/decorator'
 require 'roar/json'
+require_relative 'popularity_representer'
 
 module MerciDanke
   module Representer

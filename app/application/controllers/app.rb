@@ -109,10 +109,9 @@ module MerciDanke
             end
           end
           # GET /pokemon
-          routing.get do 
-            path_request = Request::PokemonPath.new(id, request)
-
-            result = Service::BasicPokemonPopularity.new.call(requested: request)
+          routing.get do
+            puts 'pokemon route'
+            result = Service::BasicPokemonPopularity.new.call
 
             if result.failure?
               failed = Representer::HttpResponse.new(result.failure)
@@ -122,7 +121,7 @@ module MerciDanke
             http_response = Representer::HttpResponse.new(result.value!)
             response.status = http_response.http_status_code
 
-            Representer::BasicPokemonPopularity.new(
+            Representer::BasicPokemonList.new(
               result.value!.message
             ).to_json
           end

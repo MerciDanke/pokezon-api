@@ -42,8 +42,7 @@ module MerciDanke
       # Support methods for steps
 
       def correct_pokemon_id(input)
-        result = SearchRecord::ForPoke.klass(Entity::Pokemon).find_origin_id(input.to_i)
-        result
+        SearchRecord::ForPoke.klass(Entity::Pokemon).find_origin_id(input.to_i)
       end
 
       def products_in_database(input)

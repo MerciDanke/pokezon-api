@@ -18,6 +18,14 @@ module MerciDanke
         rebuild_entity(db_pokemon)
       end
 
+      def self.find_all
+        db_pokemons = Database::PokemonOrm.all
+        db_pokemons.map do |db_pokemon|
+          # find_full_name(db_pokemon.poke_name)
+          rebuild_entity(db_pokemon)
+        end
+      end
+
       def self.find_id(poke_id)
         puts poke_id.class
         db_pokemon = Database::PokemonOrm
