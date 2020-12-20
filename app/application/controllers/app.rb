@@ -110,7 +110,14 @@ module MerciDanke
           end
           # GET /pokemon
           routing.get do
-            result = Service::BasicPokemonPopularity.new.call
+            result =
+            if routing.params == {}
+              Service::BasicPokemonPopularity.new.call
+            else
+              # GET /pokemon?color=xx&type_name=xx&habitat=xx&height=xx&weight=xx
+              path_request = Request::AdvancePath.new(routing.params)
+              Service::Advance.new.call(requested: path_request)
+            end
 
             if result.failure?
               failed = Representer::HttpResponse.new(result.failure)
@@ -123,35 +130,6 @@ module MerciDanke
             Representer::BasicPokemonList.new(
               result.value!.message
             ).to_json
-          end
-        end
-
-        routing.on 'pokemons' do
-          routing.on String, String, String, String, String do
-            routing.is do
-              # GET /pokemons?list={base64 json array of pokemon filter}
-              # if list=null, return all the pokemons
-              routing.get do
-                list_req = Request::EncodedProjectList.new(routing.params)
-                result =
-                  if list_req
-                    Service::ListPokemons.new.call(list_request: list_req)
-                  else
-                    Service::Pokemons.new.call
-                  end
-                if result.failure?
-                  failed = Representer::HttpResponse.new(result.failure)
-                  routing.halt failed.http_status_code, failed.to_json
-                end
-
-                http_response = Representer::HttpResponse.new(result.value!)
-                response.status = http_response.http_status_code
-
-                Representer::Pokemons.new(
-                  result.value!.message
-                ).to_json
-              end
-            end
           end
         end
       end
