@@ -110,7 +110,6 @@ module MerciDanke
           end
           # GET /pokemon
           routing.get do
-            puts 'pokemon route'
             result = Service::BasicPokemonPopularity.new.call
 
             if result.failure?
