@@ -5,7 +5,7 @@ require 'dry/transaction'
 module MerciDanke
   module Service
     # Transaction to store product from Amazon API to database
-    class PokeomonLike
+    class PokemonLike
       include Dry::Transaction
 
       step :plus_like

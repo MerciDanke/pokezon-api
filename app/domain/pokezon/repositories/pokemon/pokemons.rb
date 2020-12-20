@@ -19,6 +19,7 @@ module MerciDanke
       end
 
       def self.find_id(poke_id)
+        puts poke_id.class
         db_pokemon = Database::PokemonOrm
           .where(id: poke_id)
           .first
@@ -52,8 +53,8 @@ module MerciDanke
 
       # update the num of poke_likes
       def self.plus_like(id)
-        poke_like_num = Database::PokemonOrm.where(id: id).first.poke_likes
-        Database::PokemonOrm.where(id: id).first.update(poke_likes: poke_like_num + 1)
+        poke_like_num = Database::PokemonOrm.where(origin_id: id).first.poke_likes
+        Database::PokemonOrm.where(origin_id: id).first.update(poke_likes: poke_like_num + 1)
       end
 
       def self.create(entity)

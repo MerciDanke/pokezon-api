@@ -36,13 +36,14 @@ module MerciDanke
             Success(Response::ApiResult.new(status: :ok, message: pokemon_popu))
           end
       rescue StandardError
-        Failure(Response::ApiResult.new(status: :not_found, message: DB_ERR_MSG))
+        Failure(Response::ApiResult.new(status: :internal_error, message: DB_ERR_MSG))
       end
 
       # Support methods for steps
 
       def correct_pokemon_id(input)
-        SearchRecord::ForPoke.klass(Entity::Pokemon).find_id(input)
+        result = SearchRecord::ForPoke.klass(Entity::Pokemon).find_origin_id(input.to_i)
+        result
       end
 
       def products_in_database(input)

@@ -18,6 +18,8 @@ describe 'Test API routes' do
   before do
     VcrHelper.configure_vcr_for_apikey
     DatabaseHelper.wipe_database
+    pokemon = MerciDanke::Pokemon::PokemonMapper.new.find(POKE_ID)
+    MerciDanke::SearchRecord::ForPoke.entity(pokemon).create(pokemon)
   end
 
   after do
@@ -37,11 +39,11 @@ describe 'Test API routes' do
 
   describe 'Pokemons route' do
     it 'should be able to show pokemon info and popularity' do
-      pokemon = MerciDanke::Pokemon::PokemonMapper.new.find(POKE_NAME)
-      MerciDanke::SearchRecord::ForPoke.entity(pokemon).create(pokemon)
-      MerciDanke::Service::PokemonPopularity.new.call(poke_name: POKE_NAME)
+      # pokemon = MerciDanke::Pokemon::PokemonMapper.new.find(POKE_ID)
+      # MerciDanke::SearchRecord::ForPoke.entity(pokemon).create(pokemon)
+      MerciDanke::Service::PokemonPopularity.new.call(poke_id: POKE_ID)
 
-      get "/api/v1/pokemons/#{POKE_NAME}"
+      get "/api/v1/pokemon/#{POKE_ID}"
       _(last_response.status).must_equal 200
       pokemon = JSON.parse last_response.body
       _(pokemon.keys.sort).must_equal %w[pokemon popularity]
@@ -69,7 +71,7 @@ describe 'Test API routes' do
     it 'should be report error for an invalid pokemon name' do
       MerciDanke::Service::PokemonPopularity.new.call(poke_name: 'foobar')
 
-      get "/api/v1/pokemons/foobar"
+      get "/api/v1/pokemon/foobar"
       _(last_response.status).must_equal 404
       _(JSON.parse(last_response.body)['status']).must_include 'not'
     end
@@ -95,6 +97,24 @@ describe 'Test API routes' do
 
       _(last_response.status).must_equal 404
       _(JSON.parse(last_response.body)['status']).must_include 'not'
+    end
+  end
+  describe 'likes route' do
+    it 'should be able to plus pokemon like' do
+      MerciDanke::Service::PokemonLike.new.call(target_id: POKE_ID)
+
+      put "api/v1/pokemon/#{POKE_ID}/likes"
+      _(last_response.status).must_equal 200
+      _(JSON.parse(last_response.body)['message']).must_include 'plus'
+    end
+    it 'should be able to plus product like' do
+      am_products = MerciDanke::Amazon::ProductMapper.new.find(POKE_NAME, MerciDanke::App.config.API_KEY)
+      am_products.map { |prod| MerciDanke::SearchRecord::For.entity(prod).create(prod) }
+      MerciDanke::Service::ProductLike.new.call(target_id: PRODUCT_OID)
+
+      put "api/v1/product/#{PRODUCT_OID}/likes"
+      _(last_response.status).must_equal 200
+      _(JSON.parse(last_response.body)['message']).must_include 'plus'
     end
   end
 end
