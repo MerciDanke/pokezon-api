@@ -16,6 +16,7 @@ module MerciDanke
       property :origin_id
       property :poke_name
       property :front_default
+      property :poke_likes
 
       link :self do
         "#{App.config.API_HOST}/api/v1/pokemon/#{poke_id}"
