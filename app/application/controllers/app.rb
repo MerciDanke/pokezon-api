@@ -7,6 +7,7 @@ module MerciDanke
   class App < Roda
     plugin :all_verbs # allows DELETE and other HTTP verbs beyond GET/POST
     plugin :halt
+    plugin :caching
     use Rack::MethodOverride # for other HTTP verbs (with plugin all_verbs)
 
     route do |routing|
@@ -35,6 +36,7 @@ module MerciDanke
           routing.on String do |poke_name|
             # GET /products/{poke_name}
             routing.get do
+              response.cache_control public: true, max_age: 3600
               path_request = Request::ProductPath.new(poke_name, request)
               result = Service::ShowProducts.new.call(requested: path_request)
 
@@ -107,6 +109,7 @@ module MerciDanke
           end
           # GET /pokemon
           routing.get do
+            response.cache_control public: true, max_age: 3600
             result =
             if routing.params == {}
               Service::BasicPokemonPopularity.new.call

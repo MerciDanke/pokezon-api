@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 source 'https://rubygems.org'
-# ruby File.read('.ruby-version').strip
+ruby File.read('.ruby-version').strip
 
 # PRESENTATION LAYER
 gem 'multi_json'
@@ -18,6 +18,11 @@ gem 'roda', '~> 3.8'
 gem 'dry-monads'
 gem 'dry-transaction'
 gem 'dry-validation'
+
+# Caching
+gem 'rack-cache', '~> 1.12'
+gem 'redis', '~> 4.2'
+gem 'redis-rack-cache', '~> 2.2'
 
 # DOMAIN LAYER
 # Validation
