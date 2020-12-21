@@ -27,7 +27,7 @@ jobs:
           bundler-cache: true
 
       - name: Setup test database
-        run: RCK_ENV=test bundle exec rake db:migrate
+        run: RACK_ENV=test bundle exec rake db:migrate
 
       - name: Run all specs
         env:
