@@ -17,7 +17,7 @@ module MerciDanke
       DB_ERR_MSG = 'Having trouble accessing the database'
 
       def find_pokemon(input)
-        pokemon = correct_pokemon_id(input[:requested].poke_id)
+        pokemon = correct_pokemon_name(input[:requested].poke_name)
         if pokemon
           Success(pokemon)
         else
@@ -36,13 +36,13 @@ module MerciDanke
             Success(Response::ApiResult.new(status: :ok, message: pokemon_popu))
           end
       rescue StandardError
-        Failure(Response::ApiResult.new(status: :not_found, message: DB_ERR_MSG))
+        Failure(Response::ApiResult.new(status: :internal_error, message: DB_ERR_MSG))
       end
 
       # Support methods for steps
 
-      def correct_pokemon_id(input)
-        SearchRecord::ForPoke.klass(Entity::Pokemon).find_id(input)
+      def correct_pokemon_name(input)
+        SearchRecord::ForPoke.klass(Entity::Pokemon).find_full_name(input)
       end
 
       def products_in_database(input)

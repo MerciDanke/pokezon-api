@@ -11,12 +11,13 @@ require 'minitest/rg'
 
 require_relative '../../init'
 
-ID = '1'.freeze
-POKE_NAME = 'bulbasaur'.freeze
+POKE_ID = '1'
+POKE_NAME = 'bulbasaur'
+PRODUCT_OID = 'B07K4RC7Y5'
 CORRECT = YAML.safe_load(File.read('spec/fixtures/poke_data/poke1_results.yml'))
 
-CASSETTES_FOLDER = 'spec/fixtures/cassettes'.freeze
-CASSETTE_FILE = 'pokemon_api'.freeze
+CASSETTES_FOLDER = 'spec/fixtures/cassettes'
+CASSETTE_FILE = 'pokemon_api'
 
 API_KEY = MerciDanke::App.config.API_KEY
 

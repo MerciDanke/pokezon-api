@@ -1,8 +1,8 @@
 # frozen_string_literal: true
 
-require_relative '../../helpers/spec_helper.rb'
-require_relative '../../helpers/vcr_helper.rb'
-require_relative '../../helpers/database_helper.rb'
+require_relative '../../helpers/spec_helper'
+require_relative '../../helpers/vcr_helper'
+require_relative '../../helpers/database_helper'
 
 describe 'ShowProduct Service Integration Test' do
   VcrHelper.setup_vcr
@@ -76,8 +76,7 @@ describe 'ShowProduct Service Integration Test' do
 
     it 'BAD: should gracefully fail for invalid product url' do
       # GIVEN: an invalid url request is formed
-      BAD_POKE_NAME = 'foobar'
-      url_request = MerciDanke::Forms::SearchProduct.new.call(poke_name: BAD_POKE_NAME)
+      url_request = MerciDanke::Forms::SearchProduct.new.call(poke_name: 'foobar')
 
       # WHEN: the service is called with the request form object
       product_made = MerciDanke::Service::ShowProducts.new.call(url_request)

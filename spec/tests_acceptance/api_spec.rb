@@ -18,6 +18,8 @@ describe 'Test API routes' do
   before do
     VcrHelper.configure_vcr_for_apikey
     DatabaseHelper.wipe_database
+    pokemon = MerciDanke::Pokemon::PokemonMapper.new.find(POKE_ID)
+    MerciDanke::SearchRecord::ForPoke.entity(pokemon).create(pokemon)
   end
 
   after do
@@ -35,16 +37,15 @@ describe 'Test API routes' do
     end
   end
 
-  describe 'Pokemons route' do
+  describe 'Pokemon detail route' do
     it 'should be able to show pokemon info and popularity' do
-      pokemon = MerciDanke::Pokemon::PokemonMapper.new.find(POKE_NAME)
-      MerciDanke::SearchRecord::ForPoke.entity(pokemon).create(pokemon)
       MerciDanke::Service::PokemonPopularity.new.call(poke_name: POKE_NAME)
 
-      get "/api/v1/pokemons/#{POKE_NAME}"
+      get "/api/v1/pokemon/#{POKE_NAME}"
       _(last_response.status).must_equal 200
       pokemon = JSON.parse last_response.body
       _(pokemon.keys.sort).must_equal %w[pokemon popularity]
+      _(pokemon['pokemon']['id']).must_be_kind_of Integer
       _(pokemon['pokemon']['origin_id']).must_equal 1
       _(pokemon['pokemon']['poke_name']).must_equal POKE_NAME
       _(pokemon['pokemon']['types'].count).must_equal 2
@@ -69,9 +70,37 @@ describe 'Test API routes' do
     it 'should be report error for an invalid pokemon name' do
       MerciDanke::Service::PokemonPopularity.new.call(poke_name: 'foobar')
 
-      get "/api/v1/pokemons/foobar"
+      get '/api/v1/pokemon/foobar'
       _(last_response.status).must_equal 404
       _(JSON.parse(last_response.body)['status']).must_include 'not'
+    end
+  end
+
+  describe 'Basic Pokemon route' do
+    it 'should be able to show pokemon basic info and popularities' do
+      MerciDanke::Service::BasicPokemonPopularity.new.call
+
+      get '/api/v1/pokemon'
+      _(last_response.status).must_equal 200
+      pokemon = JSON.parse last_response.body
+      _(pokemon.keys.sort).must_equal %w[pokemon_list popularity_list]
+      _(pokemon['pokemon_list'][0]['id']).must_be_kind_of Integer
+      _(pokemon['pokemon_list'][0]['origin_id']).must_equal 1
+      _(pokemon['pokemon_list'][0]['poke_name']).must_equal POKE_NAME
+      _(pokemon['pokemon_list'][0]['front_default']).must_include 'png'
+      _(pokemon['pokemon_list'][0]['poke_likes']).must_be_kind_of Integer
+      _(pokemon['popularity_list'][0]['poke_id']).must_equal 1
+      _(pokemon['popularity_list'][0]['popularity_level']).must_be_kind_of String
+      _(pokemon['pokemon_list'][0]['links'].count).must_equal 1
+    end
+
+    it 'should be able to show specific pokemon basic info and popularities' do
+      MerciDanke::Service::BasicPokemonPopularity.new.call
+
+      get '/api/v1/pokemon?color=green'
+      _(last_response.status).must_equal 200
+      pokemon = JSON.parse last_response.body
+      _(pokemon['pokemon_list'].count).must_equal pokemon['popularity_list'].count
     end
   end
 
@@ -91,10 +120,28 @@ describe 'Test API routes' do
     it 'should report error for invalid pokemon name' do
       MerciDanke::Service::ShowProducts.new.call(poke_name: 'foobar')
 
-      get "api/v1/products/foobar"
+      get 'api/v1/products/foobar'
 
       _(last_response.status).must_equal 404
       _(JSON.parse(last_response.body)['status']).must_include 'not'
+    end
+  end
+  describe 'likes route' do
+    it 'should be able to plus pokemon like' do
+      MerciDanke::Service::PokemonLike.new.call(target_id: POKE_ID)
+
+      put "api/v1/pokemon/#{POKE_ID}/likes"
+      _(last_response.status).must_equal 200
+      _(JSON.parse(last_response.body)['message']).must_include 'plus'
+    end
+    it 'should be able to plus product like' do
+      am_products = MerciDanke::Amazon::ProductMapper.new.find(POKE_NAME, MerciDanke::App.config.API_KEY)
+      am_products.map { |prod| MerciDanke::SearchRecord::For.entity(prod).create(prod) }
+      MerciDanke::Service::ProductLike.new.call(target_id: PRODUCT_OID)
+
+      put "api/v1/product/#{PRODUCT_OID}/likes"
+      _(last_response.status).must_equal 200
+      _(JSON.parse(last_response.body)['message']).must_include 'plus'
     end
   end
 end
