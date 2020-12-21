@@ -37,13 +37,53 @@ describe 'Test API routes' do
     end
   end
 
-  describe 'Pokemons route' do
+  describe 'Pokemon detail route' do
     it 'should be able to show pokemon info and popularity' do
       # pokemon = MerciDanke::Pokemon::PokemonMapper.new.find(POKE_ID)
       # MerciDanke::SearchRecord::ForPoke.entity(pokemon).create(pokemon)
-      MerciDanke::Service::PokemonPopularity.new.call(poke_id: POKE_ID)
+      MerciDanke::Service::PokemonPopularity.new.call(poke_name: POKE_NAME)
 
-      get "/api/v1/pokemon/#{POKE_ID}"
+      get "/api/v1/pokemon/#{POKE_NAME}"
+      _(last_response.status).must_equal 200
+      pokemon = JSON.parse last_response.body
+      _(pokemon.keys.sort).must_equal %w[pokemon popularity]
+      _(pokemon['pokemon']['origin_id']).must_equal 1
+      _(pokemon['pokemon']['poke_name']).must_equal POKE_NAME
+      _(pokemon['pokemon']['types'].count).must_equal 2
+      _(pokemon['pokemon']['height']).must_equal 7
+      _(pokemon['pokemon']['weight']).must_equal 69
+      _(pokemon['pokemon']['back_default']).must_include 'png'
+      _(pokemon['pokemon']['back_shiny']).must_include 'png'
+      _(pokemon['pokemon']['front_default']).must_include 'png'
+      _(pokemon['pokemon']['front_shiny']).must_include 'png'
+      _(pokemon['pokemon']['evochain'].count).must_equal 4
+      _(pokemon['pokemon']['habitat']).must_equal 'grassland'
+      _(pokemon['pokemon']['color']).must_equal 'green'
+      _(pokemon['pokemon']['flavor_text_entries']).must_be_kind_of String
+      _(pokemon['pokemon']['genera']).must_equal 'Seed Pokémon'
+      _(pokemon['pokemon']['abilities'].count).must_equal 2
+      _(pokemon['pokemon']['poke_likes']).must_be_kind_of Integer
+      _(pokemon['popularity']['poke_id']).must_equal 1
+      _(pokemon['popularity']['popularity_level']).must_be_kind_of String
+      _(pokemon['pokemon']['links'].count).must_equal 1
+    end
+
+    it 'should be report error for an invalid pokemon name' do
+      MerciDanke::Service::PokemonPopularity.new.call(poke_name: 'foobar')
+
+      get "/api/v1/pokemon/foobar"
+      _(last_response.status).must_equal 404
+      _(JSON.parse(last_response.body)['status']).must_include 'not'
+    end
+  end
+
+  describe 'Basic Pokemon route' do
+    it 'should be able to show pokemon info and popularity' do
+      # pokemon = MerciDanke::Pokemon::PokemonMapper.new.find(POKE_ID)
+      # MerciDanke::SearchRecord::ForPoke.entity(pokemon).create(pokemon)
+      MerciDanke::Service::PokemonPopularity.new.call(poke_name: POKE_NAME)
+
+      get "/api/v1/pokemon/#{POKE_NAME}"
       _(last_response.status).must_equal 200
       pokemon = JSON.parse last_response.body
       _(pokemon.keys.sort).must_equal %w[pokemon popularity]
