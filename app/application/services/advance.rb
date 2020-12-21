@@ -57,8 +57,8 @@ module MerciDanke
           'weight': (low_w..high_w),
           'height': (low_h..high_h)
         }
-        hash = hash.compact
-        hash.reject { |_key, value| value == (0.0..0.0) }
+        new_hash = hash.reject { |_key, value| value == (0.0..0.0) }
+        new_hash.reject { |_key, value| value == '' }
       end
 
       def products_in_database(input)

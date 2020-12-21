@@ -1,9 +1,10 @@
 # frozen_string_literal: true
 
 require 'roda'
-# require 'yaml'
 require 'econfig'
 require 'delegate'
+require 'rack/cache'
+require 'redis-rack-cache'
 
 module MerciDanke
   # Environment-specific configuration
@@ -26,9 +27,22 @@ module MerciDanke
       VcrHelper.configure_vcr_for_apikey(recording: :none)
     end
 
+    configure :development do
+      use Rack::Cache,
+          verbose: true,
+          metastore: 'file:_cache/rack/meta',
+          entitystore: 'file:_cache/rack/body'
+    end
+
     configure :production do
       # Set DATABASE_URL environment variable on production platform
+
+      use Rack::Cache,
+          verbose: true,
+          metastore: config.REDISCLOUD_URL + '/0/metastore',
+          entitystore: config.REDISCLOUD_URL + '/0/entitystore'
     end
+
 
     configure do
       require 'sequel'

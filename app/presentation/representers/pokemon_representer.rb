@@ -36,13 +36,13 @@ module MerciDanke
       property :poke_likes
 
       link :self do
-        "#{App.config.API_HOST}/api/v1/pokemon/#{poke_id}"
+        "#{App.config.API_HOST}/api/v1/pokemon/#{poke_name}"
       end
 
       private
 
-      def poke_id
-        represented.origin_id
+      def poke_name
+        represented.poke_name
       end
     end
   end
