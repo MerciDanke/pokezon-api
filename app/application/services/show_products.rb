@@ -9,7 +9,6 @@ module MerciDanke
       include Dry::Transaction
 
       step :find_pokemon
-      # step :find_store_products
       step :request_searching_worker
       step :show_products
 
@@ -49,27 +48,7 @@ module MerciDanke
         Failure(Response::ApiResult.new(status: :internal_error, message: DB_ERR))
       end
 
-      # def find_store_products(input)
-      #   db_products = products_in_database(input[:poke_name])
-
-      #   products =
-      #     if db_products.length.zero?
-      #       am_products = products_in_amazon(input[:poke_name])
-      #       am_products.map { |prod| SearchRecord::For.entity(prod).create(prod) }
-      #     else
-      #       db_products
-      #     end
-
-      #   Response::ProductsList.new(products).then { |product| Success(Response::ApiResult.new(status: :ok, message: product)) }
-      # rescue StandardError
-      #   Failure(Response::ApiResult.new(status: :not_found, message: AM_ERR_MSG))
-      # end
-
       # Support methods for steps
-
-      # def products_in_amazon(input)
-      #   Amazon::ProductMapper.new.find(input, MerciDanke::App.config.API_KEY)
-      # end
 
       def correct_pokemon_name(input)
         SearchRecord::ForPoke.klass(Entity::Pokemon).find_full_name(input)
