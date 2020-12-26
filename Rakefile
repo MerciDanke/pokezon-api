@@ -124,7 +124,7 @@ namespace :queues do
   task :config do
     require 'aws-sdk-sqs'
     require_relative 'config/environment' # load config info
-    @api = CodePraise::App
+    @api = MerciDanke::App
 
     @sqs = Aws::SQS::Client.new(
       access_key_id: @api.config.AWS_ACCESS_KEY_ID,
@@ -174,7 +174,7 @@ namespace :worker do
   namespace :run do
     desc 'Run the background cloning worker in development mode'
     task :dev => :config do
-      sh 'RACK_ENV=development bundle exec shoryuken -r ./workers/search_products_worker.rb -C ./workers/shoryuken.yml'
+      sh 'RACK_ENV=development bundle exec shoryuken -r ./workers/search_products_worker.rb -C ./workers/shoryuken_dev.yml'
     end
 
     desc 'Run the background cloning worker in testing mode'
