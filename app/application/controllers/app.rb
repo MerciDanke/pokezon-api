@@ -38,9 +38,18 @@ module MerciDanke
             # GET /products/{poke_name}
             routing.get do
               Cache::Control.new(response).turn_on if Env.new(App).production?
-
-              path_request = Request::ProductPath.new(poke_name, request)
-              result = Service::ShowProducts.new.call(requested: path_request)
+              result =
+              if routing.params == {}
+                path_request = Request::ProductPath.new(poke_name, request)
+                Service::ShowProducts.new.call(requested: path_request)
+              else
+                # GET /products/{poke_name}?sort=id
+                # GET /products/{poke_name}?sort=likes_DESC(ASC)
+                # GET /products/{poke_name}?sort=rating_DESC(ASC)
+                # GET /products/{poke_name}?sort=price_DESC(ASC)
+                path_request = Request::ProductsSortPath.new(poke_name, routing.params)
+                Service::ProductsSort.new.call(requested: path_request)
+              end
 
               Representer::For.new(result).status_and_body(response)
             end
@@ -87,7 +96,7 @@ module MerciDanke
             if routing.params == {}
               Service::BasicPokemonPopularity.new.call
             else
-              # GET /pokemon?color=xx&type_name=xx&habitat=xx&height=xx&weight=xx
+              # GET /pokemon?color=xx&type_name=xx&habitat=xx&low_h=xx&high_h&low_w=xx&high_w=xx
               path_request = Request::AdvancePath.new(routing.params)
               Service::Advance.new.call(requested: path_request)
             end
