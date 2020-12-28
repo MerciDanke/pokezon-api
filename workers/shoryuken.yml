@@ -1,0 +1,2 @@
+queues:
+  - https://sqs.us-east-1.amazonaws.com/538379610130/pokezon-search-production

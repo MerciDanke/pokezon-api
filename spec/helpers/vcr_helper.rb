@@ -13,6 +13,7 @@ class VcrHelper
       vcr.cassette_library_dir = CASSETTES_FOLDER
       vcr.hook_into :webmock
       vcr.ignore_localhost = true
+      vcr.ignore_hosts 'sqs.ap-northeast-1.amazonaws.com'
     end
   end
 

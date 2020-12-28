@@ -9,12 +9,14 @@ module MerciDanke
       include Dry::Transaction
 
       step :find_pokemon
-      step :find_store_products
+      step :request_searching_worker
+      step :show_products
 
       private
 
       POKE_ERR_MSG = 'Could not find that pokemon!'
-      AM_ERR_MSG = 'Amazon products have some unknown problems. Please try again!'
+      PROCESSING_MSG = 'Processing the summary request'
+      DB_ERR = 'Having trouble accessing the database'
 
       def find_pokemon(input)
         pokemon = correct_pokemon_name(input[:requested].poke_name)
@@ -27,27 +29,26 @@ module MerciDanke
         Failure(Response::ApiResult.new(status: :not_found, message: POKE_ERR_MSG))
       end
 
-      def find_store_products(input)
+      def request_searching_worker(input)
         db_products = products_in_database(input[:poke_name])
+        return Success(db_products) unless db_products.length.zero?
 
-        products =
-          if db_products.length.zero?
-            am_products = products_in_amazon(input[:poke_name])
-            am_products.map { |prod| SearchRecord::For.entity(prod).create(prod) }
-          else
-            db_products
-          end
+        Messaging::Queue
+          .new(App.config.CLONE_QUEUE_URL, App.config)
+          .send(input[:poke_name].to_json)
 
-        Response::ProductsList.new(products).then { |product| Success(Response::ApiResult.new(status: :ok, message: product)) }
+        Failure(Response::ApiResult.new(status: :processing, message: PROCESSING_MSG))
       rescue StandardError
-        Failure(Response::ApiResult.new(status: :not_found, message: AM_ERR_MSG))
+        Failure(Response::ApiResult.new(status: :internal_error, message: DB_ERR))
+      end
+
+      def show_products(input)
+        Response::ProductsList.new(input).then { |product| Success(Response::ApiResult.new(status: :ok, message: product)) }
+      rescue StandardError
+        Failure(Response::ApiResult.new(status: :internal_error, message: DB_ERR))
       end
 
       # Support methods for steps
-
-      def products_in_amazon(input)
-        Amazon::ProductMapper.new.find(input, MerciDanke::App.config.API_KEY)
-      end
 
       def correct_pokemon_name(input)
         SearchRecord::ForPoke.klass(Entity::Pokemon).find_full_name(input)
