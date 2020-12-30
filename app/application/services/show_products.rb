@@ -14,14 +14,15 @@ module MerciDanke
 
       private
 
+      SEARCH_ERR = 'Could not search this pokemon products'
       POKE_ERR_MSG = 'Could not find that pokemon!'
       PROCESSING_MSG = 'Processing the summary request'
       DB_ERR = 'Having trouble accessing the database'
 
       def find_pokemon(input)
-        pokemon = correct_pokemon_name(input[:requested].poke_name)
-        if pokemon
-          Success(pokemon)
+        input[:poke_name] = correct_pokemon_name(input[:requested].poke_name).poke_name
+        if input[:poke_name]
+          Success(input)
         else
           Failure(Response::ApiResult.new(status: :not_found, message: POKE_ERR_MSG))
         end
@@ -34,12 +35,13 @@ module MerciDanke
         return Success(db_products) unless db_products.length.zero?
 
         Messaging::Queue
-          .new(App.config.CLONE_QUEUE_URL, App.config)
-          .send(input[:poke_name].to_json)
+          .new(App.config.SEARCH_QUEUE_URL, App.config)
+          .send(search_request_json(input))
 
-        Failure(Response::ApiResult.new(status: :processing, message: PROCESSING_MSG))
-      rescue StandardError
-        Failure(Response::ApiResult.new(status: :internal_error, message: DB_ERR))
+        Failure(Response::ApiResult.new(status: :processing, message: input[:request_id]))
+      rescue StandardError => e
+        print_error(e)
+        Failure(Response::ApiResult.new(status: :internal_error, message: SEARCH_ERR))
       end
 
       def show_products(input)
@@ -50,6 +52,10 @@ module MerciDanke
 
       # Support methods for steps
 
+      def print_error(error)
+        puts [error.inspect, error.backtrace].flatten.join("\n")
+      end
+
       def correct_pokemon_name(input)
         SearchRecord::ForPoke.klass(Entity::Pokemon).find_full_name(input)
       end
@@ -57,6 +63,12 @@ module MerciDanke
       def products_in_database(input)
         SearchRecord::For.klass(Entity::Product)
           .find_full_name(input)
+      end
+
+      def search_request_json(input)
+        Response::SearchRequest.new(input[:poke_name], input[:request_id])
+          .then { Representer::SearchRequest.new(_1) }
+          .then(&:to_json)
       end
     end
   end

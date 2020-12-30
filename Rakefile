@@ -136,11 +136,11 @@ namespace :queues do
   desc 'Create SQS queue for worker'
   task :create => :config do
     puts "Environment: #{@api.environment}"
-    @sqs.create_queue(queue_name: @api.config.CLONE_QUEUE)
+    @sqs.create_queue(queue_name: @api.config.SEARCH_QUEUE)
 
-    q_url = @sqs.get_queue_url(queue_name: @api.config.CLONE_QUEUE).queue_url
+    q_url = @sqs.get_queue_url(queue_name: @api.config.SEARCH_QUEUE).queue_url
     puts 'Queue created:'
-    puts "  Name: #{@api.config.CLONE_QUEUE}"
+    puts "  Name: #{@api.config.SEARCH_QUEUE}"
     puts "  Region: #{@api.config.AWS_REGION}"
     puts "  URL: #{q_url}"
   rescue StandardError => e
@@ -149,11 +149,11 @@ namespace :queues do
 
   desc 'Report status of queue for worker'
   task :status => :config do
-    q_url = @sqs.get_queue_url(queue_name: @api.config.CLONE_QUEUE).queue_url
+    q_url = @sqs.get_queue_url(queue_name: @api.config.SEARCH_QUEUE).queue_url
 
     puts "Environment: #{@api.environment}"
     puts 'Queue info:'
-    puts "  Name: #{@api.config.CLONE_QUEUE}"
+    puts "  Name: #{@api.config.SEARCH_QUEUE}"
     puts "  Region: #{@api.config.AWS_REGION}"
     puts "  URL: #{q_url}"
   rescue StandardError => e
@@ -162,7 +162,7 @@ namespace :queues do
 
   desc 'Purge messages in SQS queue for worker'
   task :purge => :config do
-    q_url = @sqs.get_queue_url(queue_name: @api.config.CLONE_QUEUE).queue_url
+    q_url = @sqs.get_queue_url(queue_name: @api.config.SEARCH_QUEUE).queue_url
     @sqs.purge_queue(queue_url: q_url)
     puts "Queue #{queue_name} purged"
   rescue StandardError => e

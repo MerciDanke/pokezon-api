@@ -21,7 +21,6 @@ module MerciDanke
       def self.find_all
         db_pokemons = Database::PokemonOrm.all
         db_pokemons.map do |db_pokemon|
-          # find_full_name(db_pokemon.poke_name)
           rebuild_entity(db_pokemon)
         end
       end
@@ -61,8 +60,8 @@ module MerciDanke
 
       # update the num of poke_likes
       def self.plus_like(id)
-        poke_like_num = Database::PokemonOrm.where(id: id).first.poke_likes
-        Database::PokemonOrm.where(id: id).first.update(poke_likes: poke_like_num + 1)
+        poke_like_num = Database::PokemonOrm.where(origin_id: id).first.poke_likes
+        Database::PokemonOrm.where(origin_id: id).first.update(poke_likes: poke_like_num + 1)
       end
 
       def self.create(entity)

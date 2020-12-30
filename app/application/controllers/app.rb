@@ -38,10 +38,15 @@ module MerciDanke
             # GET /products/{poke_name}
             routing.get do
               Cache::Control.new(response).turn_on if Env.new(App).production?
+              request_id = [request.env, request.path, Time.now.to_f].hash
               result =
               if routing.params == {}
                 path_request = Request::ProductPath.new(poke_name, request)
-                Service::ShowProducts.new.call(requested: path_request)
+                Service::ShowProducts.new.call(
+                  requested: path_request,
+                  request_id: request_id,
+                  config: App.config
+                )
               else
                 # GET /products/{poke_name}?sort=id
                 # GET /products/{poke_name}?sort=likes_DESC(ASC)
@@ -63,7 +68,14 @@ module MerciDanke
                 path_request = Request::LikePath.new(origin_id, request)
                 result = Service::ProductLike.new.call(requested: path_request)
 
-                Representer::For.new(result).status_and_body(response)
+                if result.failure?
+                  failed = Representer::HttpResponse.new(result.failure)
+                  routing.halt failed.http_status_code, failed.to_json
+                end
+                http_response = Representer::HttpResponse.new(result.value!)
+                response.status = http_response.http_status_code
+                http_response.to_json
+                # Representer::For.new(result).status_and_body(response)
               end
             end
           end
@@ -76,8 +88,15 @@ module MerciDanke
               routing.put do
                 path_request = Request::LikePath.new(id_or_name, request)
                 result = Service::PokemonLike.new.call(requested: path_request)
+                if result.failure?
+                  failed = Representer::HttpResponse.new(result.failure)
+                  routing.halt failed.http_status_code, failed.to_json
+                end
+                http_response = Representer::HttpResponse.new(result.value!)
+                response.status = http_response.http_status_code
+                http_response.to_json
 
-                Representer::For.new(result).status_and_body(response)
+                # Representer::For.new(result).status_and_body(response)
               end
             end
             # GET /pokemon/{poke_name}

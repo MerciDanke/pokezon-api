@@ -34,6 +34,7 @@ module MerciDanke
           MerciDanke::Entity::Product.new(
             id: nil,
             origin_id: origin_id,
+            position: position,
             poke_name: poke_name,
             title: title,
             link: link,
@@ -51,6 +52,10 @@ module MerciDanke
 
         def origin_id
           @data['asin']
+        end
+
+        def position
+          @data['position']
         end
 
         def title
