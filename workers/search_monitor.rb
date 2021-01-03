@@ -5,15 +5,23 @@ module SearchProducts
   module SearchMonitor
     SEARCH_PROGRESS = {
       'STARTED'  => 15,
-      '5'        => 30,
-      '15'       => 50,
-      '30'       => 70,
-      '40'       => 90,
+      # '5'        => 30,
+      # '15'       => 50,
+      'searching'=> 50,
+      'creating' => 80,
       'FINISHED' => 100
     }.freeze
 
     def self.starting_percent
       SEARCH_PROGRESS['STARTED'].to_s
+    end
+
+    def self.searching_percent
+      SEARCH_PROGRESS['searching'].to_s
+    end
+
+    def self.creating_percent
+      SEARCH_PROGRESS['creating'].to_s
     end
 
     def self.finished_percent

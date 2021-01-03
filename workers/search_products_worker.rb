@@ -31,10 +31,11 @@ module SearchProducts
     def perform(_sqs_msg, request)
       job = JobReporter.new(request, Worker.config)
       job.report(SearchMonitor.starting_percent)
-      MerciDanke::Amazon::ProductMapper.new.find(job.poke_name, MerciDanke::App.config.API_KEY) do |product|
-        job.report SearchMonitor.progress(product)
-        MerciDanke::SearchRecord::For.entity(product).create(product)
-      end
+      job.report(SearchMonitor.searching_percent)
+      am_products = MerciDanke::Amazon::ProductMapper.new.find(job.poke_name, MerciDanke::App.config.API_KEY)
+      job.report(SearchMonitor.creating_percent)
+      am_products.map { |prod| MerciDanke::SearchRecord::For.entity(prod).create(prod) }
+
       # ?????????????????????????????
       # CodePraise::GitRepo.new(job.project, Worker.config).clone_locally do |line|
       #   job.report SearchMonitor.progress(line)
