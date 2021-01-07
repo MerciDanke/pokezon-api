@@ -1,9 +1,5 @@
 # frozen_string_literal: true
 
-# require_relative '../app/domain/init'
-# require_relative '../app/application/requests/init'
-# require_relative '../app/infrastructure/gateways/init'
-# require_relative '../app/presentation/representers/init'
 require_relative '../init'
 require_relative 'search_monitor'
 require_relative 'job_reporter'
@@ -12,7 +8,7 @@ require 'econfig'
 require 'shoryuken'
 
 module SearchProducts
-# Shoryuken worker class to search products in parallel
+  # Shoryuken worker class to search products in parallel
   class Worker
     extend Econfig::Shortcut
     Econfig.env = ENV['RACK_ENV'] || 'development'
@@ -32,9 +28,9 @@ module SearchProducts
       job = JobReporter.new(request, Worker.config)
       job.report(SearchMonitor.starting_percent)
       job.report(SearchMonitor.searching_percent)
-      am_products = MerciDanke::Amazon::ProductMapper.new.find(job.poke_name, MerciDanke::App.config.API_KEY)
+      # am_products = MerciDanke::Amazon::ProductMapper.new.find(job.poke_name, MerciDanke::App.config.API_KEY)
       job.report(SearchMonitor.creating_percent)
-      am_products.map { |prod| MerciDanke::SearchRecord::For.entity(prod).create(prod) }
+      # am_products.map { |prod| MerciDanke::SearchRecord::For.entity(prod).create(prod) }
 
       # ?????????????????????????????
       # CodePraise::GitRepo.new(job.project, Worker.config).clone_locally do |line|
