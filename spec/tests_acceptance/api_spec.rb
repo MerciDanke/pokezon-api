@@ -105,7 +105,9 @@ describe 'Test API routes' do
   end
 
   describe 'products route' do
-    it 'should be able to show products' do
+    it 'should be able to show products that are already stored in db' do
+      am_products = MerciDanke::Amazon::ProductMapper.new.find(POKE_NAME, MerciDanke::App.config.API_KEY)
+      am_products.map { |prod| MerciDanke::SearchRecord::For.entity(prod).create(prod) }
       MerciDanke::Service::ShowProducts.new.call(poke_name: POKE_NAME)
 
       get "api/v1/products/#{POKE_NAME}"
@@ -113,8 +115,32 @@ describe 'Test API routes' do
       _(last_response.status).must_equal 200
 
       products = JSON.parse last_response.body
-      _(products['products'].count).must_equal 60
+      _(products['products'].class).must_equal Array
       _(products['products'][0]['poke_name']).must_equal POKE_NAME
+    end
+
+    it 'should be able to show products that are in processing' do
+      MerciDanke::Service::ShowProducts.new.call(poke_name: 'pidgey')
+
+      get "api/v1/products/#{POKE_NAME}"
+
+      _(last_response.status).must_equal 202
+
+      products = JSON.parse last_response.body
+      _(products['message'].class).must_equal Integer
+    end
+    it 'should be able to show products that are been sorted by rating ' do
+      am_products = MerciDanke::Amazon::ProductMapper.new.find(POKE_NAME, MerciDanke::App.config.API_KEY)
+      am_products.map { |prod| MerciDanke::SearchRecord::For.entity(prod).create(prod) }
+      MerciDanke::Service::ProductsSort.new.call(poke_name: POKE_NAME)
+
+      get "api/v1/products/#{POKE_NAME}?sort=rating_DESC"
+
+      _(last_response.status).must_equal 200
+
+      products = JSON.parse last_response.body
+      _(products['products'].class).must_equal Array
+      assert_operator products['products'][0]['rating'], :>=, products['products'][1]['rating']
     end
 
     it 'should report error for invalid pokemon name' do
@@ -129,8 +155,7 @@ describe 'Test API routes' do
   describe 'likes route' do
     it 'should be able to plus pokemon like' do
       MerciDanke::Service::PokemonLike.new.call(target_id: POKE_ID)
-
-      put "api/v1/pokemon/#{POKE_ID}/likes"
+      put 'api/v1/pokemon/1/likes'
       _(last_response.status).must_equal 200
       _(JSON.parse(last_response.body)['message']).must_include 'plus'
     end

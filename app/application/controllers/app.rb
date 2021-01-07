@@ -38,9 +38,23 @@ module MerciDanke
             # GET /products/{poke_name}
             routing.get do
               Cache::Control.new(response).turn_on if Env.new(App).production?
-
-              path_request = Request::ProductPath.new(poke_name, request)
-              result = Service::ShowProducts.new.call(requested: path_request)
+              request_id = [request.env, request.path, Time.now.to_f].hash
+              result =
+              if routing.params == {}
+                path_request = Request::ProductPath.new(poke_name, request)
+                Service::ShowProducts.new.call(
+                  requested: path_request,
+                  request_id: request_id,
+                  config: App.config
+                )
+              else
+                # GET /products/{poke_name}?sort=id
+                # GET /products/{poke_name}?sort=likes_DESC(ASC)
+                # GET /products/{poke_name}?sort=rating_DESC(ASC)
+                # GET /products/{poke_name}?sort=price_DESC(ASC)
+                path_request = Request::ProductsSortPath.new(poke_name, routing.params)
+                Service::ProductsSort.new.call(requested: path_request)
+              end
 
               Representer::For.new(result).status_and_body(response)
             end
@@ -54,7 +68,14 @@ module MerciDanke
                 path_request = Request::LikePath.new(origin_id, request)
                 result = Service::ProductLike.new.call(requested: path_request)
 
-                Representer::For.new(result).status_and_body(response)
+                if result.failure?
+                  failed = Representer::HttpResponse.new(result.failure)
+                  routing.halt failed.http_status_code, failed.to_json
+                end
+                http_response = Representer::HttpResponse.new(result.value!)
+                response.status = http_response.http_status_code
+                http_response.to_json
+                # Representer::For.new(result).status_and_body(response)
               end
             end
           end
@@ -67,8 +88,15 @@ module MerciDanke
               routing.put do
                 path_request = Request::LikePath.new(id_or_name, request)
                 result = Service::PokemonLike.new.call(requested: path_request)
+                if result.failure?
+                  failed = Representer::HttpResponse.new(result.failure)
+                  routing.halt failed.http_status_code, failed.to_json
+                end
+                http_response = Representer::HttpResponse.new(result.value!)
+                response.status = http_response.http_status_code
+                http_response.to_json
 
-                Representer::For.new(result).status_and_body(response)
+                # Representer::For.new(result).status_and_body(response)
               end
             end
             # GET /pokemon/{poke_name}
@@ -87,7 +115,7 @@ module MerciDanke
             if routing.params == {}
               Service::BasicPokemonPopularity.new.call
             else
-              # GET /pokemon?color=xx&type_name=xx&habitat=xx&height=xx&weight=xx
+              # GET /pokemon?color=xx&type_name=xx&habitat=xx&low_h=xx&high_h&low_w=xx&high_w=xx
               path_request = Request::AdvancePath.new(routing.params)
               Service::Advance.new.call(requested: path_request)
             end

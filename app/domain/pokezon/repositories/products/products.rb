@@ -26,6 +26,60 @@ module MerciDanke
         end.compact
       end
 
+      def self.order_by_desc_likes(poke_name)
+        db_products = Database::ProductOrm
+          .where(poke_name: poke_name)
+          .order { product_likes.desc }.all
+        db_products.map do |db_product|
+          rebuild_entity(db_product)
+        end
+      end
+
+      def self.order_by_asc_likes(poke_name)
+        db_products = Database::ProductOrm
+          .where(poke_name: poke_name)
+          .order { product_likes.asc }.all
+        db_products.map do |db_product|
+          rebuild_entity(db_product)
+        end
+      end
+
+      def self.order_by_desc_rating(poke_name)
+        db_products = Database::ProductOrm
+          .where(poke_name: poke_name)
+          .order { rating.desc }.all
+        db_products.map do |db_product|
+          rebuild_entity(db_product)
+        end
+      end
+
+      def self.order_by_asc_rating(poke_name)
+        db_products = Database::ProductOrm
+          .where(poke_name: poke_name)
+          .order { rating.asc }.all
+        db_products.map do |db_product|
+          rebuild_entity(db_product)
+        end
+      end
+
+      def self.order_by_desc_price(poke_name)
+        db_products = Database::ProductOrm
+          .where(poke_name: poke_name)
+          .order { price.desc }.all
+        db_products.map do |db_product|
+          rebuild_entity(db_product)
+        end
+      end
+
+      def self.order_by_asc_price(poke_name)
+        db_products = Database::ProductOrm
+          .where(poke_name: poke_name)
+          .order { price.asc }.all
+        db_products.map do |db_product|
+          rebuild_entity(db_product)
+        end
+      end
+
       # update the num of product_likes
       def self.plus_like(origin_id)
         product_like_num = Database::ProductOrm.where(origin_id: origin_id).first.product_likes
@@ -72,18 +126,6 @@ module MerciDanke
         def create_product
           Database::ProductOrm.create(@entity.to_attr_hash)
         end
-
-        # def call
-        #   owner = Members.db_find_or_create(@entity.owner)
-
-        #   create_product.map do |db_product|
-        #     db_product.update(owner: owner)
-
-        #     @entity.contributors.each do |contributor|
-        #       db_project.add_contributor(Members.db_find_or_create(contributor))
-        #     end
-        #   end
-        # end
       end
     end
   end
