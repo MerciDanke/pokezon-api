@@ -16,8 +16,8 @@ module MerciDanke
 
       # GET /
       routing.root do
-        5.times do |num|
-          break if Database::PokemonOrm.find(id: 5)
+        800.times do |num|
+          break if Database::PokemonOrm.find(id: 800)
 
           pokemons = Pokemon::PokemonMapper.new.find((num + 1).to_s)
           SearchRecord::ForPoke.entity(pokemons).create(pokemons)
