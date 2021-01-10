@@ -26,7 +26,6 @@ module MerciDanke
       end
 
       def self.find_id(poke_id)
-        puts poke_id.class
         db_pokemon = Database::PokemonOrm
           .where(id: poke_id)
           .first
