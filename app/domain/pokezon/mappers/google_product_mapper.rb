@@ -1,10 +1,10 @@
 # frozen_string_literal: false
 
 module MerciDanke
-  module Amazon
+  module GoogleShopping
     # Data Mapper: Amazon product -> Product entity
     class ProductMapper
-      def initialize(gateway_class = Amazon::Api)
+      def initialize(gateway_class = GoogleShopping::Api)
         @gateway_class = gateway_class
         @gateway = @gateway_class.new
       end
@@ -12,29 +12,29 @@ module MerciDanke
       def find(poke_name, apikey)
         # data = all data
         data = @gateway.product_data(poke_name, apikey)
-        build_entity(data['results'], data['requestDetails']['marketplaceUrl'])
+        build_entity(data, poke_name)
       end
 
-      def build_entity(products, marketplaceurl)
+      def build_entity(products, poke_name)
         if products != nil
           products.map do |product|
-            DataMapper.new(product, marketplaceurl).build_entity
+            DataMapper.new(product, poke_name).build_entity
           end
         end
       end
 
       # Extracts entity specific elements from data structure
       class DataMapper
-        def initialize(product_detail, marketplaceurl)
+        def initialize(product_detail, poke_name)
           @data = product_detail
-          @url_data = marketplaceurl
+          @poke_name = poke_name
         end
 
         def build_entity
           MerciDanke::Entity::Product.new(
             id: nil,
             origin_id: origin_id,
-            poke_name: poke_name,
+            poke_name: @poke_name,
             title: title,
             link: link,
             image: image,
@@ -45,40 +45,44 @@ module MerciDanke
           )
         end
 
-        def poke_name
-          @url_data.split('=')[1]
-        end
-
         def origin_id
-          @data['asin']
+          if @data[:product_id].nil?
+            'nil'
+          else
+            @data[:product_id]
+          end
         end
 
         def title
-          @data['title']
+          @data[:title]
         end
 
         def link
-          @data['link']
+          @data[:link]
         end
 
         def image
-          @data['image']
+          @data[:thumbnail]
         end
 
         def ratings_total
-          @data['ratingsTotal']
+          if @data[:reviews].nil?
+            0
+          else
+            @data[:reviews].to_i
+          end
         end
 
         def rating
-          @data['rating']
+          if @data[:rating].nil?
+            0.0
+          else
+            @data[:rating].to_f
+          end
         end
 
         def price
-          if @data.length < 11
-            nil
-          else
-            @data['prices'][0]['price']
-          end
+          @data[:price]
         end
       end
     end

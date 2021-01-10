@@ -17,10 +17,10 @@ module MerciDanke
       end
 
       def level_rules
-        if @average_rating.zero? then 'Unsearch'
-        elsif @average_rating > 3.5 && @products_num >= 45 && @poke_likes_num >= 10 && @products_likes_num > 5 then 'Super Hot'
-        elsif @average_rating > 3.0 && @products_num >= 35 && @poke_likes_num >= 7 && @products_likes_num > 3 then 'Hot'
-        elsif @average_rating > 2.5 && @products_num >= 25 && @poke_likes_num >= 4 && @products_likes_num > 1 then 'Common'
+        if @products_num.zero? then 'Unsearch'
+        elsif @average_rating > 2.5 && @products_num >= 10 && @poke_likes_num >= 10 && @products_likes_num > 5 then 'Super Hot'
+        elsif @average_rating > 2.0 && @products_num >= 4 && @poke_likes_num >= 7 && @products_likes_num > 3 then 'Hot'
+        elsif @average_rating > 1.5 && @products_num >= 2 && @poke_likes_num >= 4 && @products_likes_num > 1 then 'Common'
         else
           'Unpopular'
         end

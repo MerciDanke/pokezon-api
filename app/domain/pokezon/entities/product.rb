@@ -12,9 +12,9 @@ module MerciDanke
       attribute :title,     Strict::String
       attribute :link,      Strict::String
       attribute :image,     Strict::String
-      attribute :rating,    Strict::Float
-      attribute :ratings_total, Strict::Integer
-      attribute :price, Float.optional
+      attribute :rating,    Float.optional
+      attribute :ratings_total, Integer.optional
+      attribute :price, String.optional
       attribute :product_likes, Integer.optional
 
       def to_attr_hash

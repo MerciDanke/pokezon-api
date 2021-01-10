@@ -36,7 +36,8 @@ module MerciDanke
 
         Messaging::Queue
           .new(App.config.SEARCH_QUEUE_URL, App.config)
-          .send(search_request_json(input))
+          # .send(search_request_json(input))
+          .send(input)
 
         Failure(Response::ApiResult.new(status: :processing, message: { request_id: input[:request_id] }))
       rescue StandardError => e

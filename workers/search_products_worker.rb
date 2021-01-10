@@ -26,26 +26,17 @@ module SearchProducts
 
     def perform(_sqs_msg, request)
       job = JobReporter.new(request, Worker.config)
-      job.report(SearchMonitor.starting_percent)
+      job.report_each_second(1) { SearchMonitor.searching_percent }
       job.report(SearchMonitor.searching_percent)
-      # am_products = MerciDanke::Amazon::ProductMapper.new.find(job.poke_name, MerciDanke::App.config.API_KEY)
+      products = MerciDanke::GoogleShopping::ProductMapper.new.find(job.poke_name, MerciDanke::App.config.API_KEY)
       job.report(SearchMonitor.creating_percent)
-      # am_products.map { |prod| MerciDanke::SearchRecord::For.entity(prod).create(prod) }
-
-      # ?????????????????????????????
-      # CodePraise::GitRepo.new(job.project, Worker.config).clone_locally do |line|
-      #   job.report SearchMonitor.progress(line)
-      # end
+      products.map { |prod| MerciDanke::SearchRecord::For.entity(prod).create(prod) }
 
       # Keep sending finished status to any latecoming subscribers
-      job.report_each_second(5) { SearchMonitor.finished_percent }
+      job.report_each_second(2) { SearchMonitor.finished_percent }
     rescue StandardError
       # worker should crash early & often - only catch errors we expect!
       puts 'PRODUCTS EXISTS -- ignoring request'
-    #   am_products = MerciDanke::Amazon::ProductMapper.new.find(request, MerciDanke::App.config.API_KEY)
-    #   am_products.map { |prod| MerciDanke::SearchRecord::For.entity(prod).create(prod) }
-    # rescue StandardError
-    #   puts 'AMAZON is busy. Please try again!'
     end
   end
 end
