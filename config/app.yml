@@ -14,5 +14,5 @@ app_test:
   # Infrastructure
   DB_FILENAME: app/infrastructure/database/local/test.db
 production:
-  API_HOST: https://mercidanke2020-api.herokuapp.com
+  API_HOST: https://pokezon-api.herokuapp.com
   # Infrastructure
