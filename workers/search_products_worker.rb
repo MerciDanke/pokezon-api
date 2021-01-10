@@ -22,19 +22,11 @@ module SearchProducts
 
     include Shoryuken::Worker
     Shoryuken.sqs_client_receive_message_opts = { wait_time_seconds: 20 }
-    # Shoryuken.sqs_client_receive_message_opts = { queue_url: config.SEARCH_QUEUE_URL, # required
-    # attribute_names: ["All"],
-    # message_attribute_names: ["poke_name"],
-    # max_number_of_messages: 1,
-    # visibility_timeout: 1,
-    # wait_time_seconds: 20}
-    # receive_request_attempt_id: '18' }
     shoryuken_options queue: config.SEARCH_QUEUE_URL, auto_delete: true
 
     def perform(_sqs_msg, request)
       job = JobReporter.new(request, Worker.config)
-      puts "sqs #{job.poke_name}"
-      job.report_each_second(5) { SearchMonitor.searching_percent }
+      job.report_each_second(1) { SearchMonitor.searching_percent }
       job.report(SearchMonitor.searching_percent)
       products = MerciDanke::GoogleShopping::ProductMapper.new.find(job.poke_name, MerciDanke::App.config.API_KEY)
       job.report(SearchMonitor.creating_percent)

@@ -25,7 +25,7 @@ module MerciDanke
       #   q.send({data: "hello"}.to_json)
       def send(message)
         @queue.send_message({ message_group_id: 'search_request',
-                              message_body: "#{message[:poke_name]}, #{message[:request_id]}",
+                              message_body: "#{message[:poke_name]},#{message[:request_id]}",
                               message_attributes: {
                                 'poke_name' => {
                                   string_value: message[:poke_name],
