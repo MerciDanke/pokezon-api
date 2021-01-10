@@ -16,8 +16,8 @@ module MerciDanke
 
       # GET /
       routing.root do
-        800.times do |num|
-          break if Database::PokemonOrm.find(id: 800)
+        25.times do |num|
+          break if Database::PokemonOrm.find(id: 25)
 
           pokemons = Pokemon::PokemonMapper.new.find((num + 1).to_s)
           SearchRecord::ForPoke.entity(pokemons).create(pokemons)
@@ -41,6 +41,7 @@ module MerciDanke
               request_id = [request.env, request.path, Time.now.to_f].hash
               result =
               if routing.params == {}
+                puts 'params and class', routing.params, routing.params.class
                 path_request = Request::ProductPath.new(poke_name, request)
                 Service::ShowProducts.new.call(
                   requested: path_request,
@@ -55,7 +56,7 @@ module MerciDanke
                 path_request = Request::ProductsSortPath.new(poke_name, routing.params)
                 Service::ProductsSort.new.call(requested: path_request)
               end
-
+              puts 'result: ', result
               Representer::For.new(result).status_and_body(response)
             end
           end
@@ -113,13 +114,14 @@ module MerciDanke
             Cache::Control.new(response).turn_on if Env.new(App).production?
             result =
             if routing.params == {}
+              puts 'params and class', routing.params, routing.params.class
               Service::BasicPokemonPopularity.new.call
             else
               # GET /pokemon?color=xx&type_name=xx&habitat=xx&low_h=xx&high_h&low_w=xx&high_w=xx
               path_request = Request::AdvancePath.new(routing.params)
               Service::Advance.new.call(requested: path_request)
             end
-
+            puts 'result: ', result
             Representer::For.new(result).status_and_body(response)
           end
         end
