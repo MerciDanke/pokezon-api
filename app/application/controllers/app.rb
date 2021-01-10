@@ -16,12 +16,14 @@ module MerciDanke
 
       # GET /
       routing.root do
-        5.times do |num|
-          break if Database::PokemonOrm.find(id: 5)
+        20.times do |num|
+          break if Database::PokemonOrm.find(id: 20)
 
           pokemons = Pokemon::PokemonMapper.new.find((num + 1).to_s)
           SearchRecord::ForPoke.entity(pokemons).create(pokemons)
         end
+        products = GoogleShopping::ProductMapper.new.find('pikachu', MerciDanke::App.config.API_KEY)
+        puts products
         message = "MerciDanke API v1 at /api/v1/ in #{App.environment} mode"
 
         result_response = Representer::HttpResponse.new(

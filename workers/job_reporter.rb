@@ -8,12 +8,12 @@ module SearchProducts
     attr_accessor :poke_name
 
     def initialize(request_json, config)
-      search_request = MerciDanke::Representer::SearchRequest
-        .new(OpenStruct.new)
-        .from_json(request_json)
+      # search_request = MerciDanke::Representer::SearchRequest
+      #   .new(OpenStruct.new)
+      #   .from_json(request_json)
 
-      @poke_name = search_request.poke_name
-      @publisher = ProgressPublisher.new(config, search_request.id)
+      @poke_name = request_json.split(',')[0]
+      @publisher = ProgressPublisher.new(config, request_json.split(',')[1])
     end
 
     def report(msg)

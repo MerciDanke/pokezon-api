@@ -14,7 +14,7 @@ Sequel.migration do
       String      :image
       Float       :rating
       Integer     :ratings_total
-      Float       :price
+      String      :price
       Integer     :product_likes
 
       DateTime :created_at
