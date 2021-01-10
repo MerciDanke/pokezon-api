@@ -8,7 +8,7 @@ module MerciDanke
   class App < Roda
     plugin :all_verbs # allows DELETE and other HTTP verbs beyond GET/POST
     plugin :halt
-    plugin :caching
+    # plugin :caching
     use Rack::MethodOverride # for other HTTP verbs (with plugin all_verbs)
 
     route do |routing|
