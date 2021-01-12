@@ -6,12 +6,14 @@ require_relative '../../helpers/database_helper'
 
 require 'ostruct'
 
-describe 'Search Amazon Products Service Integration Test' do
+describe 'Search Google Shopping Products Service Integration Test' do
   VcrHelper.setup_vcr
   DatabaseHelper.setup_database_cleaner
 
   before do
     VcrHelper.configure_vcr_for_apikey(recording: :none)
+    pokemon = MerciDanke::Pokemon::PokemonMapper.new.find(POKE_ID)
+    MerciDanke::SearchRecord::ForPoke.entity(pokemon).create(pokemon)
   end
 
   after do
@@ -25,18 +27,16 @@ describe 'Search Amazon Products Service Integration Test' do
 
     it 'HAPPY: should return products that are being watched' do
       # GIVEN: valid products exist locally and is being watched
-      amz_products = MerciDanke::Amazon::ProductMapper
-        .new.find(POKE_NAME, API_KEY)
-      amz_product = amz_products[0]
+      products = MerciDanke::GoogleShopping::ProductMapper.new.find(POKE_NAME, API_KEY)
+      product = products[0]
 
-      db_product = MerciDanke::SearchRecord::For.entity(amz_product)
-        .create(amz_product)
-
+      db_product = MerciDanke::SearchRecord::For.entity(product)
+        .create(product)
       watched_list = [POKE_NAME]
 
       # WHEN: we request a list of all watched products
-      result = MerciDanke::Service::ListProducts.new.call(watched_list)
-
+      result = MerciDanke::Service::ShowProducts.new.call(poke_name: watched_list)
+      puts result.value!
       # THEN: we should see our product in the resulting list
       _(result.success?).must_equal true
       products = result.value!
@@ -45,17 +45,18 @@ describe 'Search Amazon Products Service Integration Test' do
 
     it 'HAPPY: should not return products that are not being watched' do
       # GIVEN: valid products exist locally but is not being watched
-      amz_products = MerciDanke::Amazon::ProductMapper
-        .new.find(POKE_NAME, API_KEY)
-      amz_products.map do |product|
+      products = MerciDanke::GoogleShopping::ProductMapper.new.find(POKE_NAME, API_KEY)
+      # amz_products = MerciDanke::Amazon::ProductMapper
+      #   .new.find(POKE_NAME, API_KEY)
+      products.map do |product|
         MerciDanke::SearchRecord::For.entity(product)
           .create(product)
       end
       watched_list = []
 
       # WHEN: we request a list of all watched products
-      result = MerciDanke::Service::ListProducts.new.call(watched_list)
-
+      result = MerciDanke::Service::ShowProducts.new.call(poke_name: watched_list)
+      puts result.value!
       # THEN: it should return an empty list
       _(result.success?).must_equal true
       products = result.value!
@@ -67,8 +68,8 @@ describe 'Search Amazon Products Service Integration Test' do
       watched_list = [POKE_NAME]
 
       # WHEN: we request a list of all watched products
-      result = MerciDanke::Service::ListProducts.new.call(watched_list)
-
+      result = MerciDanke::Service::ShowProducts.new.call(poke_name: watched_list)
+      puts result.value!
       # THEN: it should return an empty list
       _(result.success?).must_equal true
       products = result.value!

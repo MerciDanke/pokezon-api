@@ -20,7 +20,9 @@ module MerciDanke
       DB_ERR = 'Having trouble accessing the database'
 
       def find_pokemon(input)
+        put '1'
         input[:poke_name] = correct_pokemon_name(input[:requested].poke_name).poke_name
+        put '2'
         if input[:poke_name]
           Success(input)
         else
