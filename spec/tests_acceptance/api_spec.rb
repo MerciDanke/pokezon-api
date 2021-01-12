@@ -106,8 +106,8 @@ describe 'Test API routes' do
 
   describe 'products route' do
     it 'should be able to show products that are already stored in db' do
-      am_products = MerciDanke::Amazon::ProductMapper.new.find(POKE_NAME, MerciDanke::App.config.API_KEY)
-      am_products.map { |prod| MerciDanke::SearchRecord::For.entity(prod).create(prod) }
+      products = MerciDanke::GoogleShopping::ProductMapper.new.find(POKE_NAME, API_KEY)
+      products.map { |prod| MerciDanke::SearchRecord::For.entity(prod).create(prod) }
       MerciDanke::Service::ShowProducts.new.call(poke_name: POKE_NAME)
 
       get "api/v1/products/#{POKE_NAME}"
@@ -120,18 +120,18 @@ describe 'Test API routes' do
     end
 
     it 'should be able to show products that are in processing' do
-      MerciDanke::Service::ShowProducts.new.call(poke_name: 'pidgey')
+      MerciDanke::Service::ShowProducts.new.call(poke_name: "#{POKE_NAME}")
 
       get "api/v1/products/#{POKE_NAME}"
 
       _(last_response.status).must_equal 202
 
       products = JSON.parse last_response.body
-      _(products['message'].class).must_equal Integer
+      _(products['message']['request_id'].class).must_equal Integer
     end
     it 'should be able to show products that are been sorted by rating ' do
-      am_products = MerciDanke::Amazon::ProductMapper.new.find(POKE_NAME, MerciDanke::App.config.API_KEY)
-      am_products.map { |prod| MerciDanke::SearchRecord::For.entity(prod).create(prod) }
+      products = MerciDanke::GoogleShopping::ProductMapper.new.find(POKE_NAME, API_KEY)
+      products.map { |prod| MerciDanke::SearchRecord::For.entity(prod).create(prod) }
       MerciDanke::Service::ProductsSort.new.call(poke_name: POKE_NAME)
 
       get "api/v1/products/#{POKE_NAME}?sort=rating_DESC"
@@ -160,11 +160,11 @@ describe 'Test API routes' do
       _(JSON.parse(last_response.body)['message']).must_include 'plus'
     end
     it 'should be able to plus product like' do
-      am_products = MerciDanke::Amazon::ProductMapper.new.find(POKE_NAME, MerciDanke::App.config.API_KEY)
-      am_products.map { |prod| MerciDanke::SearchRecord::For.entity(prod).create(prod) }
-      MerciDanke::Service::ProductLike.new.call(target_id: PRODUCT_OID)
+      products = MerciDanke::GoogleShopping::ProductMapper.new.find(POKE_NAME, API_KEY)
+      products.map { |prod| MerciDanke::SearchRecord::For.entity(prod).create(prod) }
+      put 'api/v1/product/1/likes'
 
-      put "api/v1/product/#{PRODUCT_OID}/likes"
+      MerciDanke::Service::ProductLike.new.call(requested: 1)
       _(last_response.status).must_equal 200
       _(JSON.parse(last_response.body)['message']).must_include 'plus'
     end

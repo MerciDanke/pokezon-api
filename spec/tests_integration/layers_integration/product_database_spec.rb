@@ -22,7 +22,7 @@ describe 'Integration Tests of Amazon API and Database' do
     end
 
     it 'HAPPY: should be able to save products from Amazon API to database' do
-      products = MerciDanke::Amazon::ProductMapper.new.find(POKE_NAME, API_KEY)
+      products = MerciDanke::GoogleShopping::ProductMapper.new.find(POKE_NAME, API_KEY)
       product = products[0]
       rebuilt = MerciDanke::SearchRecord::For.entity(product).create(product)
       _(rebuilt.origin_id).must_equal(product.origin_id)
