@@ -14,15 +14,17 @@ describe 'Tests Product API library' do
 
   describe 'Product information' do
     it 'HAPPY: should provide correct product datatype' do
-      producttests = MerciDanke::Amazon::ProductMapper.new.find(POKENAME, API_KEY)
-      producttests.each do |producttest|
-        _(producttest.origin_id.class).must_equal String
-        _(producttest.poke_name.class).must_equal String
-        _(producttest.title.class).must_equal String
-        _(producttest.link.class).must_equal String
-        _(producttest.image.class).must_equal String
-        _(producttest.rating.class).must_equal Float
-        _(producttest.ratings_total.class).must_equal Integer
+      products = MerciDanke::GoogleShopping::ProductMapper.new.find(POKE_NAME, API_KEY)
+      products.each do |product|
+        _(product.origin_id.class).must_equal String
+        _(product.poke_name.class).must_equal String
+        _(product.title.class).must_equal String
+        _(product.link.class).must_equal String
+        _(product.image.class).must_equal String
+        _(product.rating.class).wont_be_nil
+        _(product.ratings_total.class).wont_be_nil
+        _(product.price.class).must_equal String
+        _(product.product_likes.class).must_equal Integer
       end
     end
   end

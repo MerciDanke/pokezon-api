@@ -12,11 +12,11 @@ describe 'Test popularity Mapper and Gateway' do
     VcrHelper.configure_vcr_for_apikey
     DatabaseHelper.wipe_database
 
-    products = Amazon::ProductMapper.new.find(POKE_NAME, API_KEY)
+    products = MerciDanke::GoogleShopping::ProductMapper.new.find(POKE_NAME, API_KEY)
     pokemon = Pokemon::PokemonMapper.new.find(POKE_NAME)
     @db_pokemon = ForPoke.entity(pokemon).create(pokemon)
     products.map { |product| For.entity(product).create(product) }
-    @db_products = SearchRecord::For.klass(Entity::Product).find_full_name(POKE_NAME)
+    @db_products = For.klass(Entity::Product).find_full_name(POKE_NAME)
   end
 
   after do
