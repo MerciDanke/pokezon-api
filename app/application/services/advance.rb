@@ -42,7 +42,7 @@ module MerciDanke
 
       def find_advance_pokemon(advance_hash)
         SearchRecord::ForPoke.klass(Entity::Pokemon)
-                .find_all_advances(advance_hash)
+          .find_all_advances(advance_hash)
       end
 
       def select_hash(input)

@@ -120,7 +120,7 @@ describe 'Test API routes' do
     end
 
     it 'should be able to show products that are in processing' do
-      MerciDanke::Service::ShowProducts.new.call(poke_name: "#{POKE_NAME}")
+      MerciDanke::Service::ShowProducts.new.call(poke_name: POKE_NAME.to_s)
 
       get "api/v1/products/#{POKE_NAME}"
 

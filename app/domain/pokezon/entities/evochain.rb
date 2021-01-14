@@ -5,6 +5,7 @@ module MerciDanke
     # Domain entity for pokemons' evolution chain
     class Evochain < Dry::Struct
       include Dry.Types
+
       attribute :id, Integer.optional
       attribute :origin_id, Strict::Integer
       attribute :chain_species_name, Strict::String

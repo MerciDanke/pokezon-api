@@ -4,7 +4,7 @@ Web API that combines pokemon and related Google Shopping products to ranked eac
 ### Root check
 `GET /`
 
-Status:
+Status
 - 200: API server running (happy)
 
 ### Pokémon intro and its popularity
@@ -28,10 +28,14 @@ Status
 
 ### Sort Google Shopping products
 `GET /products/{poke_name}?sort=id`
+
 `GET /products/{poke_name}?sort=likes_DESC(ASC)`
+
 `GET /products/{poke_name}?sort=rating_DESC(ASC)`
+
 `GET /products/{poke_name}?sort=price_DESC(ASC)`
 
 ### Plus likes of Pokémon & Google Shopping products
 `PUT /pokemon/{id}/likes`
+
 `PUT /product/{origin_id}/likes`

@@ -1,7 +1,7 @@
 # frozen_string_literal: false
 
 require_relative '../../helpers/spec_helper'
-require_relative '../../helpers/vcr_helper.rb'
+require_relative '../../helpers/vcr_helper'
 
 describe 'Tests Pokemon API library' do
   VCR.configure do |c|

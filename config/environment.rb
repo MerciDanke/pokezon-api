@@ -22,7 +22,7 @@ module MerciDanke
     end
 
     configure :app_test do
-      require_relative '../spec/helpers/vcr_helper.rb'
+      require_relative '../spec/helpers/vcr_helper'
       VcrHelper.setup_vcr
       VcrHelper.configure_vcr_for_apikey(recording: :none)
     end
@@ -42,7 +42,6 @@ module MerciDanke
     #       metastore: config.REDISCLOUD_URL + '/0/metastore',
     #       entitystore: config.REDISCLOUD_URL + '/0/entitystore'
     # end
-
 
     configure do
       require 'sequel'

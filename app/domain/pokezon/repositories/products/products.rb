@@ -102,13 +102,9 @@ module MerciDanke
       end
 
       def self.create(entity)
-        # raise 'Product already exists' if find(entity)
-
         db_product = PersistProduct.new(entity).create_product unless find(entity)
         rebuild_entity(db_product)
       end
-
-      private
 
       def self.rebuild_entity(db_record)
         return nil unless db_record

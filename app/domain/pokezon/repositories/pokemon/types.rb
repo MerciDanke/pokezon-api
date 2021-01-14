@@ -8,8 +8,6 @@ module MerciDanke
         rebuild_entity Database::TypeOrm.first(id: id)
       end
 
-      private
-
       def self.rebuild_many(db_records)
         db_records.map do |db_types|
           Types.rebuild_entity(db_types)

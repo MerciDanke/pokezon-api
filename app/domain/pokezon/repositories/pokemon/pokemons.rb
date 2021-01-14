@@ -33,16 +33,16 @@ module MerciDanke
       end
 
       def self.find_all_advances(hash)
-        if hash.key?(:'type_name')
-          db_pokemons = Database::PokemonOrm
-            .left_join(Database::TypeOrm.left_join(:pokemons_types, type_id: :id), poke_id: :id)
-            .where(hash)
-            .all
-        else
-          db_pokemons = Database::PokemonOrm
-            .where(hash)
-            .all
-        end
+        db_pokemons = if hash.key?(:'type_name')
+                        Database::PokemonOrm
+                          .left_join(Database::TypeOrm.left_join(:pokemons_types, type_id: :id), poke_id: :id)
+                          .where(hash)
+                          .all
+                      else
+                        Database::PokemonOrm
+                          .where(hash)
+                          .all
+                      end
         db_pokemons.map do |db_pokemon|
           rebuild_entity(db_pokemon)
         end

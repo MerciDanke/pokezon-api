@@ -9,12 +9,6 @@ module MerciDanke
         @gateway = @gateway_class.new
       end
 
-      # def find(poke_name)
-      #   # data = all data
-      #   poke_data = @gateway.poke_data(poke_name)
-      #   build_entity(poke_data)
-      # end
-
       def build_entity(poke_data)
         DataMapper.new(poke_data).build_entity
       end

@@ -8,17 +8,16 @@ module MerciDanke
         rebuild_entity Database::EvochainOrm.first(id: id)
       end
 
-      private
-
       def self.rebuild_entity(db_record)
         return nil unless db_record
+
         # error:db_record.evochain is nil
         MerciDanke::Entity::Evochain.new(
-          id:                 db_record.id,
-          origin_id:          db_record.origin_id,
+          id: db_record.id,
+          origin_id: db_record.origin_id,
           chain_species_name: db_record.chain_species_name,
-          evolves_to:         db_record.evolves_to,
-          evolves_to_second:  db_record.evolves_to_second
+          evolves_to: db_record.evolves_to,
+          evolves_to_second: db_record.evolves_to_second
         )
       end
 

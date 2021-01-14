@@ -1,4 +1,4 @@
-# # frozen_string_literal: true
+# frozen_string_literal: true
 
 require 'roar/decorator'
 require 'roar/json'
@@ -13,9 +13,6 @@ module MerciDanke
     # Represents list of pokemons for API output
     class BasicPokemonList < Roar::Decorator
       include Roar::JSON
-
-      # collection :pokemon_list, extend: Representer::BasicPokemonPopularity,
-      #                           class: Representer::OpenStructWithLinks
 
       collection :pokemon_list, extend: Representer::BasicPokemon,
                                 class: Representer::OpenStructWithLinks

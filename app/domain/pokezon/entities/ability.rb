@@ -10,7 +10,6 @@ module MerciDanke
       attribute :origin_id, Strict::Integer
       attribute :ability_name, Strict::String
       attribute :flavor_text_entries, Strict::String
-      # attribute :ability_pokemons, Strict::String
       attribute :ability_pokemons, Strict::Array.of(String)
 
       def to_attr_hash
