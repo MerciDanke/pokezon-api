@@ -31,7 +31,7 @@ module MerciDanke
       attribute :poke_likes, Integer.optional
 
       def to_attr_hash
-        to_hash.reject { |key, _| %i[id evochain abilities types].include? key }
+        to_hash.reject { |key, _value| %i[id evochain abilities types].include? key }
       end
     end
   end

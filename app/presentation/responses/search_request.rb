@@ -2,6 +2,7 @@
 
 module MerciDanke
   module Response
+    # SearchRequest of products
     SearchRequest = Struct.new :poke_name, :id
   end
 end

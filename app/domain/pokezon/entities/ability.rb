@@ -14,7 +14,7 @@ module MerciDanke
       attribute :ability_pokemons, Strict::Array.of(String)
 
       def to_attr_hash
-        to_hash.reject { |key, _| [:id].include? key }
+        to_hash.reject { |key, _value| [:id].include? key }
       end
     end
   end

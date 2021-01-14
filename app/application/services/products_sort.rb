@@ -33,29 +33,24 @@ module MerciDanke
       # Support methods for steps
 
       def condition_sort(input)
+        poke_name = input.poke_name
+        product_db = SearchRecord::For.klass(Entity::Product)
         case input.sort
         when 'id'
-          SearchRecord::For.klass(Entity::Product)
-            .find_full_name(input.poke_name)
+          product_db.find_full_name(poke_name)
         when 'likes_DESC'
-          SearchRecord::For.klass(Entity::Product)
-            .order_by_desc_likes(input.poke_name)
+          product_db.order_by_desc_likes(poke_name)
         when 'likes_ASC'
-          SearchRecord::For.klass(Entity::Product)
-            .order_by_asc_likes(input.poke_name)
+          product_db.order_by_asc_likes(poke_name)
         when 'rating_DESC'
-          SearchRecord::For.klass(Entity::Product)
-            .order_by_desc_rating(input.poke_name)
+          product_db.order_by_desc_rating(poke_name)
         when 'rating_ASC'
-          SearchRecord::For.klass(Entity::Product)
-            .order_by_asc_rating(input.poke_name)
+          product_db.order_by_asc_rating(poke_name)
         when 'price_DESC'
-          SearchRecord::For.klass(Entity::Product)
-            .order_by_desc_price(input.poke_name)
+          product_db.order_by_desc_price(poke_name)
         else
           # priceASC
-          SearchRecord::For.klass(Entity::Product)
-            .order_by_asc_price(input.poke_name)
+          product_db.order_by_asc_price(poke_name)
         end
       end
     end

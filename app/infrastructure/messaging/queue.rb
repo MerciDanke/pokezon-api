@@ -24,19 +24,21 @@ module MerciDanke
       #   q = Messaging::Queue.new(App.config.SEARCH_QUEUE_URL)
       #   q.send({data: "hello"}.to_json)
       def send(message)
+        request_id = message[:request_id]
+        poke_name = message[:poke_name]
         @queue.send_message({ message_group_id: 'search_request',
-                              message_body: "#{message[:poke_name]},#{message[:request_id]}",
+                              message_body: "#{poke_name},#{request_id}",
                               message_attributes: {
-                                'poke_name' => {
-                                  string_value: message[:poke_name],
+                                'poke_name'  => {
+                                  string_value: poke_name,
                                   data_type: 'String' # required
                                 },
-                                'request_id' =>{
-                                  string_value: message[:request_id].to_s,
+                                'request_id' => {
+                                  string_value: request_id.to_s,
                                   data_type: 'String' # required
                                 }
                               },
-                              message_deduplication_id: Random.rand(20000).to_s})
+                              message_deduplication_id: Random.rand(20_000).to_s })
       end
 
       ## Polls queue, yielding each messge

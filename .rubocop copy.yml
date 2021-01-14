@@ -1,0 +1,63 @@
+---
+# Apply latest Ruby style guide and newly introduced cops
+AllCops:
+  TargetRubyVersion: 2.7
+  NewCops: enable
+  Include:
+    - Gemfile
+    - Rakefile
+    - '**/*.rb'
+  Exclude:
+    - _snippets/*
+
+# ignore block length where unavoidable (e.g., framework requires it)
+Metrics/BlockLength:
+  Enabled: true
+  Exclude:
+    - app/application/controllers/**/*.rb # Roda's controllers require large blocks
+    - spec/**/* # Minitest's nested test structure requires large blocks
+    - Rakefile # Rake namespaces produce large blocks
+Metrics/ClassLength:
+  Enabled: false
+
+# allow unsafe YAML loading in test code only
+Security/YAMLLoad:
+  Enabled: true
+  Exclude:
+    - spec/**/*
+
+Style/SymbolArray:
+  Enabled: true
+  Exclude:
+    - Rakefile
+
+Style/SingleLineMethods:
+  Enabled: false
+
+Style/HashSyntax:
+  Enabled: false
+
+Style/SymbolLiteral:
+  Enabled: false
+
+Style/StringConcatenation:
+  Enabled: false
+
+Style/ExplicitBlockArgument:
+  Enabled: false
+
+Lint/ConstantDefinitionInBlock:
+  Enabled: true
+  Exclude:
+    - Rakefile
+
+Layout/MultilineMethodCallIndentation:
+  Enabled: true
+  EnforcedStyle: indented
+
+Layout/HashAlignment:
+  Enabled: true
+  EnforcedHashRocketStyle: table
+
+Lint/NonDeterministicRequireOrder:
+  Enabled: false

@@ -82,8 +82,9 @@ module MerciDanke
 
       # update the num of product_likes
       def self.plus_like(id)
-        product_like_num = Database::ProductOrm.where(id: id).first.product_likes
-        Database::ProductOrm.where(id: id).first.update(product_likes: product_like_num + 1)
+        product_id = Database::ProductOrm.where(id: id).first
+        product_like_num = product_id.product_likes
+        product_id.update(product_likes: product_like_num + 1)
       end
 
       def self.find(entity)
