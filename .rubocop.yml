@@ -18,6 +18,25 @@ Metrics/BlockLength:
     - spec/**/* # Minitest's nested test structure requires large blocks
     - Rakefile # Rake namespaces produce large blocks
 
+Metrics/ParameterLists:
+  Enabled: false
+
+Metrics/MethodLength:
+  Enabled: false
+
+Metrics/AbcSize:
+  Enabled: false
+
+Metrics/CyclomaticComplexity:
+  Enabled: true
+  Exclude:
+    - app/domain/popularity/values/popularity_levels.rb
+
+Metrics/PerceivedComplexity:
+  Enabled: true
+  Exclude:
+    - app/domain/popularity/values/popularity_levels.rb
+
 # allow unsafe YAML loading in test code only
 Security/YAMLLoad:
   Enabled: true
@@ -38,10 +57,14 @@ Style/SymbolArray:
 Style/SingleLineMethods:
   Enabled: false
 
+Style/SymbolLiteral:
+  Enabled: false
+
 Lint/ConstantDefinitionInBlock:
   Enabled: true
   Exclude:
     - Rakefile
+    - config/environment.rb
 
 Layout/MultilineMethodCallIndentation:
   Enabled: true
@@ -51,7 +74,8 @@ Layout/HashAlignment:
   Enabled: true
   EnforcedHashRocketStyle: table
 
+Layout/LineLength:
+  Enabled: false
+
 Lint/NonDeterministicRequireOrder:
-  Enabled: true
-  Exclude:
-    - init.rb
+  Enabled: false

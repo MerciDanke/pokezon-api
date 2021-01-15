@@ -18,13 +18,15 @@ module MerciDanke
 
       def find_pokemon(input)
         pokemon = correct_pokemon_name(input[:requested].poke_name)
+        fail_msg = Failure(Response::ApiResult.new(status: :not_found, message: POKE_ERR_MSG))
+
         if pokemon
           Success(pokemon)
         else
-          Failure(Response::ApiResult.new(status: :not_found, message: POKE_ERR_MSG))
+          fail_msg
         end
       rescue StandardError
-        Failure(Response::ApiResult.new(status: :not_found, message: POKE_ERR_MSG))
+        fail_msg
       end
 
       def find_products(pokemon)

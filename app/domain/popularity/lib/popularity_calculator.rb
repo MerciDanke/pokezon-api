@@ -10,15 +10,16 @@ module MerciDanke
 
         all_ratings = []
         products.map { |product| all_ratings.push(product.rating) }
-        total_rating = all_ratings.reduce { |l, r| l + r }
+        total_rating = all_ratings.reduce { |left, right| left + right }
         (total_rating / cal_products_num(products)).round
       end
 
       # one pokemon can search how many products
       def cal_products_num(products)
-        return 0 if products.length.zero?
+        length = products.length
+        return 0 if length.zero?
 
-        products.length
+        length
       end
 
       # one pokemon's likes count
@@ -32,7 +33,7 @@ module MerciDanke
 
         all_likes = []
         products.map { |product| all_likes.push(product.product_likes) }
-        all_likes.reduce { |l, r| l + r }
+        all_likes.reduce { |left, right| left + right }
       end
     end
   end

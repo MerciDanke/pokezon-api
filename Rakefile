@@ -78,8 +78,8 @@ end
 
 namespace :cache do
   task :config do
-    require_relative 'config/environment.rb' # load config info
-    require_relative 'app/infrastructure/cache/init.rb' # load cache client
+    require_relative 'config/environment' # load config info
+    require_relative 'app/infrastructure/cache/init' # load cache client
     @api = MerciDanke::Api
   end
 

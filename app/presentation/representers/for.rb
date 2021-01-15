@@ -10,11 +10,11 @@ module MerciDanke
     # Returns appropriate representer for response object
     class For
       REP_KLASS = {
-        Response::ProductsList               => ProductsList,
-        Response::BasicPokemonPopularity     => BasicPokemonPopularity,
-        Response::BasicPokemonList           => BasicPokemonList,
-        Response::PokemonPopularity          => PokemonPopularity,
-        String                               => HttpResponse
+        Response::ProductsList           => ProductsList,
+        Response::BasicPokemonPopularity => BasicPokemonPopularity,
+        Response::BasicPokemonList       => BasicPokemonList,
+        Response::PokemonPopularity      => PokemonPopularity,
+        String                           => HttpResponse
       }.freeze
 
       attr_reader :status_rep, :body_rep
@@ -25,8 +25,9 @@ module MerciDanke
           @body_rep = @status_rep
         else
           value = result.value!
+          message = value.message
           @status_rep = Representer::HttpResponse.new(value)
-          @body_rep = REP_KLASS[value.message.class].new(value.message)
+          @body_rep = REP_KLASS[message.class].new(message)
         end
       end
 

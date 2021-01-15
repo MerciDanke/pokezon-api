@@ -7,9 +7,9 @@ module MerciDanke
     # Object Relational Mapper for Type Entities
     class TypeOrm < Sequel::Model(:types)
       many_to_many :types_pokemons,
-                    class: :'MerciDanke::Database::PokemonOrm',
-                    join_table: :pokemons_types,
-                    left_key: :type_id, right_key: :poke_id
+                   class: :'MerciDanke::Database::PokemonOrm',
+                   join_table: :pokemons_types,
+                   left_key: :type_id, right_key: :poke_id
 
       plugin :timestamps, update_on_create: true
 

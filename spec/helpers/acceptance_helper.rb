@@ -5,5 +5,5 @@ ENV['RACK_ENV'] = 'app_test'
 require 'watir'
 require 'page-object'
 
-require_relative 'spec_helper.rb'
-require_relative 'database_helper.rb'
+require_relative 'spec_helper'
+require_relative 'database_helper'

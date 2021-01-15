@@ -34,14 +34,13 @@ module MerciDanke
         db_products = products_in_database(input[:poke_name])
         return Success(db_products) unless db_products.length.zero?
 
+        config = App.config
         Messaging::Queue
-          .new(App.config.SEARCH_QUEUE_URL, App.config)
-          # .send(search_request_json(input))
+          .new(config.SEARCH_QUEUE_URL, config)
           .send(input)
 
         Failure(Response::ApiResult.new(status: :processing, message: { request_id: input[:request_id] }))
-      rescue StandardError => e
-        print_error(e)
+      rescue StandardError
         Failure(Response::ApiResult.new(status: :internal_error, message: SEARCH_ERR))
       end
 

@@ -7,8 +7,8 @@ module MerciDanke
     # Object Relational Mapper for Evolutionchain Entities
     class EvochainOrm < Sequel::Model(:evochains)
       one_to_many :evochain_pokemons,
-                   class: :'MerciDanke::Database::PokemonOrm',
-                   key: :evochain_id
+                  class: :'MerciDanke::Database::PokemonOrm',
+                  key: :evochain_id
 
       plugin :timestamps, update_on_create: true
 

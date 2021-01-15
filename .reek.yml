@@ -1,0 +1,16 @@
+---
+detectors:
+  TooManyMethods:
+    max_methods: 17
+  TooManyInstanceVariables:
+    max_instance_variables: 7
+  TooManyStatements:
+    max_statements: 18
+  UtilityFunction:
+    enabled: false
+  FeatureEnvy:
+    enabled: false
+  NilCheck:
+    enabled: false
+  DuplicateMethodCall:
+    max_calls: 2

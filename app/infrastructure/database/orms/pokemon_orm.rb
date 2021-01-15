@@ -7,7 +7,7 @@ module MerciDanke
     # Object Relational Mapper for Pokemon Entities
     class PokemonOrm < Sequel::Model(:pokemons)
       many_to_one :evochain,
-                   class: :'MerciDanke::Database::EvochainOrm'
+                  class: :'MerciDanke::Database::EvochainOrm'
 
       many_to_many :abilities,
                    class: :'MerciDanke::Database::AbilityOrm',

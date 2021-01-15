@@ -16,11 +16,13 @@ module MerciDanke
       end
 
       def build_entity(products, marketplaceurl)
+        # rubocop:disable Style/NonNilCheck, Style/GuardClause
         if products != nil
           products.map do |product|
             DataMapper.new(product, marketplaceurl).build_entity
           end
         end
+        # rubocop:enable Style/NonNilCheck, Style/GuardClause
       end
 
       # Extracts entity specific elements from data structure

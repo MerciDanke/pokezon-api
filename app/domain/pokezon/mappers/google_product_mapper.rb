@@ -16,11 +16,13 @@ module MerciDanke
       end
 
       def build_entity(products, poke_name)
+        # rubocop:disable Style/NonNilCheck, Style/GuardClause
         if products != nil
           products.map do |product|
             DataMapper.new(product, poke_name).build_entity
           end
         end
+        # rubocop:enable Style/NonNilCheck, Style/GuardClause
       end
 
       # Extracts entity specific elements from data structure
@@ -46,11 +48,8 @@ module MerciDanke
         end
 
         def origin_id
-          if @data[:product_id].nil?
-            'nil'
-          else
-            @data[:product_id]
-          end
+          product_id = @data[:product_id]
+          product_id.nil? ? 'nil' : product_id
         end
 
         def title
@@ -66,19 +65,13 @@ module MerciDanke
         end
 
         def ratings_total
-          if @data[:reviews].nil?
-            0
-          else
-            @data[:reviews].to_i
-          end
+          reviews = @data[:reviews]
+          reviews.nil? ? 0 : reviews.to_i
         end
 
         def rating
-          if @data[:rating].nil?
-            0.0
-          else
-            @data[:rating].to_f
-          end
+          rating = @data[:rating]
+          rating.nil? ? 0.0 : rating.to_f
         end
 
         def price

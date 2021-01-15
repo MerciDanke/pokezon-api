@@ -1,6 +1,6 @@
 # frozen_string_literal: false
 
-require_relative '../../helpers/spec_helper_product'
+require_relative '../../helpers/spec_helper'
 require_relative '../../helpers/vcr_helper'
 
 describe 'Tests Product API library' do

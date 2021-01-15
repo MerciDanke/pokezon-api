@@ -14,7 +14,7 @@ module MerciDanke
       attribute :popularity_level, String.optional
 
       def to_attr_hash
-        to_hash.reject { |key, _| [:id].include? key }
+        to_hash.reject { |key, _value| [:id].include? key }
       end
     end
   end

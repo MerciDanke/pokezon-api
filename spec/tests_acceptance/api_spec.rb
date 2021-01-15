@@ -37,45 +37,6 @@ describe 'Test API routes' do
     end
   end
 
-  describe 'Pokemon detail route' do
-    it 'should be able to show pokemon info and popularity' do
-      MerciDanke::Service::PokemonPopularity.new.call(poke_name: POKE_NAME)
-
-      get "/api/v1/pokemon/#{POKE_NAME}"
-      _(last_response.status).must_equal 200
-      pokemon = JSON.parse last_response.body
-      _(pokemon.keys.sort).must_equal %w[pokemon popularity]
-      _(pokemon['pokemon']['id']).must_be_kind_of Integer
-      _(pokemon['pokemon']['origin_id']).must_equal 1
-      _(pokemon['pokemon']['poke_name']).must_equal POKE_NAME
-      _(pokemon['pokemon']['types'].count).must_equal 2
-      _(pokemon['pokemon']['height']).must_equal 7
-      _(pokemon['pokemon']['weight']).must_equal 69
-      _(pokemon['pokemon']['back_default']).must_include 'png'
-      _(pokemon['pokemon']['back_shiny']).must_include 'png'
-      _(pokemon['pokemon']['front_default']).must_include 'png'
-      _(pokemon['pokemon']['front_shiny']).must_include 'png'
-      _(pokemon['pokemon']['evochain'].count).must_equal 4
-      _(pokemon['pokemon']['habitat']).must_equal 'grassland'
-      _(pokemon['pokemon']['color']).must_equal 'green'
-      _(pokemon['pokemon']['flavor_text_entries']).must_be_kind_of String
-      _(pokemon['pokemon']['genera']).must_equal 'Seed Pokémon'
-      _(pokemon['pokemon']['abilities'].count).must_equal 2
-      _(pokemon['pokemon']['poke_likes']).must_be_kind_of Integer
-      _(pokemon['popularity']['poke_id']).must_equal 1
-      _(pokemon['popularity']['popularity_level']).must_be_kind_of String
-      _(pokemon['pokemon']['links'].count).must_equal 1
-    end
-
-    it 'should be report error for an invalid pokemon name' do
-      MerciDanke::Service::PokemonPopularity.new.call(poke_name: 'foobar')
-
-      get '/api/v1/pokemon/foobar'
-      _(last_response.status).must_equal 404
-      _(JSON.parse(last_response.body)['status']).must_include 'not'
-    end
-  end
-
   describe 'Basic Pokemon route' do
     it 'should be able to show pokemon basic info and popularities' do
       MerciDanke::Service::BasicPokemonPopularity.new.call
@@ -120,7 +81,7 @@ describe 'Test API routes' do
     end
 
     it 'should be able to show products that are in processing' do
-      MerciDanke::Service::ShowProducts.new.call(poke_name: "#{POKE_NAME}")
+      MerciDanke::Service::ShowProducts.new.call(poke_name: POKE_NAME.to_s)
 
       get "api/v1/products/#{POKE_NAME}"
 
@@ -156,15 +117,6 @@ describe 'Test API routes' do
     it 'should be able to plus pokemon like' do
       MerciDanke::Service::PokemonLike.new.call(target_id: POKE_ID)
       put 'api/v1/pokemon/1/likes'
-      _(last_response.status).must_equal 200
-      _(JSON.parse(last_response.body)['message']).must_include 'plus'
-    end
-    it 'should be able to plus product like' do
-      products = MerciDanke::GoogleShopping::ProductMapper.new.find(POKE_NAME, API_KEY)
-      products.map { |prod| MerciDanke::SearchRecord::For.entity(prod).create(prod) }
-      put 'api/v1/product/1/likes'
-
-      MerciDanke::Service::ProductLike.new.call(requested: 1)
       _(last_response.status).must_equal 200
       _(JSON.parse(last_response.body)['message']).must_include 'plus'
     end

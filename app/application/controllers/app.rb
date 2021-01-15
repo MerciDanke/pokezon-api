@@ -8,7 +8,7 @@ module MerciDanke
   class App < Roda
     plugin :all_verbs # allows DELETE and other HTTP verbs beyond GET/POST
     plugin :halt
-    # plugin :caching
+    # plugin :caching (remove caching)
     use Rack::MethodOverride # for other HTTP verbs (with plugin all_verbs)
 
     route do |routing|
@@ -16,8 +16,8 @@ module MerciDanke
 
       # GET /
       routing.root do
-        400.times do |num|
-          break if Database::PokemonOrm.find(id: 400)
+        App.config.POKEMON_NUM.times do |num|
+          break if Database::PokemonOrm.find(id: App.config.POKEMON_NUM)
 
           pokemons = Pokemon::PokemonMapper.new.find((num + 1).to_s)
           SearchRecord::ForPoke.entity(pokemons).create(pokemons)
@@ -39,22 +39,21 @@ module MerciDanke
             routing.get do
               # Cache::Control.new(response).turn_on if Env.new(App).production?
               request_id = [request.env, request.path, Time.now.to_f].hash
-              result =
-              if routing.params == {}
-                path_request = Request::ProductPath.new(poke_name, request)
-                Service::ShowProducts.new.call(
-                  requested: path_request,
-                  request_id: request_id,
-                  config: App.config
-                )
-              else
-                # GET /products/{poke_name}?sort=id
-                # GET /products/{poke_name}?sort=likes_DESC(ASC)
-                # GET /products/{poke_name}?sort=rating_DESC(ASC)
-                # GET /products/{poke_name}?sort=price_DESC(ASC)
-                path_request = Request::ProductsSortPath.new(poke_name, routing.params)
-                Service::ProductsSort.new.call(requested: path_request)
-              end
+              result = if routing.params == {}
+                         path_request = Request::ProductPath.new(poke_name, request)
+                         Service::ShowProducts.new.call(
+                           requested: path_request,
+                           request_id: request_id,
+                           config: App.config
+                         )
+                       else
+                         # GET /products/{poke_name}?sort=id
+                         # GET /products/{poke_name}?sort=likes_DESC(ASC)
+                         # GET /products/{poke_name}?sort=rating_DESC(ASC)
+                         # GET /products/{poke_name}?sort=price_DESC(ASC)
+                         path_request = Request::ProductsSortPath.new(poke_name, routing.params)
+                         Service::ProductsSort.new.call(requested: path_request)
+                       end
               Representer::For.new(result).status_and_body(response)
             end
           end
@@ -62,7 +61,7 @@ module MerciDanke
         routing.on 'product' do
           routing.on String do |origin_id|
             routing.on 'likes' do
-              # PUT /product/{origin_id}/likes
+              # PUT /product/{id}/likes
               routing.put do
                 path_request = Request::LikePath.new(origin_id, request)
                 result = Service::ProductLike.new.call(requested: path_request)
@@ -74,7 +73,6 @@ module MerciDanke
                 http_response = Representer::HttpResponse.new(result.value!)
                 response.status = http_response.http_status_code
                 http_response.to_json
-                # Representer::For.new(result).status_and_body(response)
               end
             end
           end
@@ -94,8 +92,6 @@ module MerciDanke
                 http_response = Representer::HttpResponse.new(result.value!)
                 response.status = http_response.http_status_code
                 http_response.to_json
-
-                # Representer::For.new(result).status_and_body(response)
               end
             end
             # GET /pokemon/{poke_name}
@@ -110,14 +106,13 @@ module MerciDanke
           # GET /pokemon
           routing.get do
             # Cache::Control.new(response).turn_on if Env.new(App).production?
-            result =
-            if routing.params == {}
-              Service::BasicPokemonPopularity.new.call
-            else
-              # GET /pokemon?color=xx&type_name=xx&habitat=xx&low_h=xx&high_h&low_w=xx&high_w=xx
-              path_request = Request::AdvancePath.new(routing.params)
-              Service::Advance.new.call(requested: path_request)
-            end
+            result = if routing.params == {}
+                       Service::BasicPokemonPopularity.new.call
+                     else
+                       # GET /pokemon?color=xx&type_name=xx&habitat=xx&low_h=xx&high_h&low_w=xx&high_w=xx
+                       path_request = Request::AdvancePath.new(routing.params)
+                       Service::Advance.new.call(requested: path_request)
+                     end
             Representer::For.new(result).status_and_body(response)
           end
         end
