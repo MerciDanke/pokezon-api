@@ -21,15 +21,13 @@ module MerciDanke
 
       def find_pokemon(input)
         input[:poke_name] = correct_pokemon_name(input[:requested].poke_name).poke_name
-        fail_msg = Failure(Response::ApiResult.new(status: :not_found, message: POKE_ERR_MSG))
-
         if input[:poke_name]
           Success(input)
         else
-          fail_msg
+          Failure(Response::ApiResult.new(status: :not_found, message: POKE_ERR_MSG))
         end
       rescue StandardError
-        fail_msg
+        Failure(Response::ApiResult.new(status: :not_found, message: POKE_ERR_MSG))
       end
 
       def request_searching_worker(input)

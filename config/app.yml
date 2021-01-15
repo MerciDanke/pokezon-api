@@ -3,11 +3,13 @@ development:
   API_HOST: http://localhost:9292
   # Infrastructure
   DB_FILENAME: app/infrastructure/database/local/dev.db
+  POKEMON_NUM: 800
 
 test:
   API_HOST: http://localhost:9292
   # Infrastructure
   DB_FILENAME: app/infrastructure/database/local/test.db
+  POKEMON_NUM: 5
 
 app_test:
   API_HOST: http://localhost:9292
@@ -15,4 +17,4 @@ app_test:
   DB_FILENAME: app/infrastructure/database/local/test.db
 production:
   API_HOST: https://pokezon-api.herokuapp.com
-  # Infrastructure
+  POKEMON_NUM: 800

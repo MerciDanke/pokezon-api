@@ -8,7 +8,7 @@ module MerciDanke
   class App < Roda
     plugin :all_verbs # allows DELETE and other HTTP verbs beyond GET/POST
     plugin :halt
-    # plugin :caching
+    # plugin :caching (remove caching)
     use Rack::MethodOverride # for other HTTP verbs (with plugin all_verbs)
 
     route do |routing|
@@ -16,8 +16,8 @@ module MerciDanke
 
       # GET /
       routing.root do
-        25.times do |num|
-          break if Database::PokemonOrm.find(id: 25)
+        App.config.POKEMON_NUM.times do |num|
+          break if Database::PokemonOrm.find(id: App.config.POKEMON_NUM)
 
           pokemons = Pokemon::PokemonMapper.new.find((num + 1).to_s)
           SearchRecord::ForPoke.entity(pokemons).create(pokemons)
@@ -73,7 +73,6 @@ module MerciDanke
                 http_response = Representer::HttpResponse.new(result.value!)
                 response.status = http_response.http_status_code
                 http_response.to_json
-                # Representer::For.new(result).status_and_body(response)
               end
             end
           end
@@ -93,8 +92,6 @@ module MerciDanke
                 http_response = Representer::HttpResponse.new(result.value!)
                 response.status = http_response.http_status_code
                 http_response.to_json
-
-                # Representer::For.new(result).status_and_body(response)
               end
             end
             # GET /pokemon/{poke_name}

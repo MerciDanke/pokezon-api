@@ -34,15 +34,6 @@ module MerciDanke
           entitystore: 'file:_cache/rack/body'
     end
 
-    # configure :production do
-    #   # Set DATABASE_URL environment variable on production platform
-
-    #   use Rack::Cache,
-    #       verbose: true,
-    #       metastore: config.REDISCLOUD_URL + '/0/metastore',
-    #       entitystore: config.REDISCLOUD_URL + '/0/entitystore'
-    # end
-
     configure do
       require 'sequel'
       DB = Sequel.connect(ENV['DATABASE_URL'])
