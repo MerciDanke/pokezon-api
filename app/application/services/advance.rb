@@ -42,18 +42,25 @@ module MerciDanke
 
       def find_advance_pokemon(advance_hash)
         SearchRecord::ForPoke.klass(Entity::Pokemon)
-                .find_all_advances(advance_hash)
+          .find_all_advances(advance_hash)
       end
 
       def select_hash(input)
-        low_w = input[:requested].low_w.nil? ? 0.0 : input[:requested].low_w.to_f * 10
-        high_w = input[:requested].high_w.nil? ? 0.0 : input[:requested].high_w.to_f * 10
-        low_h = input[:requested].low_h.nil? ? 0.0 : input[:requested].low_h.to_f * 10
-        high_h = input[:requested].high_h.nil? ? 0.0 : input[:requested].high_h.to_f * 10
+        requested = input[:requested]
+        rhigh_h = requested.high_h
+        rlow_h = requested.low_h
+        rhigh_w = requested.high_w
+        rlow_w = requested.low_w
+
+        low_w = rlow_w.nil? ? 0.0 : rlow_w.to_f * 10
+        high_w = rhigh_w.nil? ? 0.0 : rhigh_w.to_f * 10
+        low_h = rlow_h.nil? ? 0.0 : rlow_h.to_f * 10
+        high_h = rhigh_h.nil? ? 0.0 : rhigh_h.to_f * 10
+
         hash = {
-          'color': input[:requested].color,
-          'type_name': input[:requested].type,
-          'habitat': input[:requested].habitat,
+          'color': requested.color,
+          'type_name': requested.type,
+          'habitat': requested.habitat,
           'weight': (low_w..high_w),
           'height': (low_h..high_h)
         }

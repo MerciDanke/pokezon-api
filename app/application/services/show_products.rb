@@ -20,30 +20,30 @@ module MerciDanke
       DB_ERR = 'Having trouble accessing the database'
 
       def find_pokemon(input)
-        put '1'
         input[:poke_name] = correct_pokemon_name(input[:requested].poke_name).poke_name
-        put '2'
+        fail_msg = Failure(Response::ApiResult.new(status: :not_found, message: POKE_ERR_MSG))
+
         if input[:poke_name]
           Success(input)
         else
-          Failure(Response::ApiResult.new(status: :not_found, message: POKE_ERR_MSG))
+          fail_msg
         end
       rescue StandardError
-        Failure(Response::ApiResult.new(status: :not_found, message: POKE_ERR_MSG))
+        fail_msg
       end
 
       def request_searching_worker(input)
         db_products = products_in_database(input[:poke_name])
         return Success(db_products) unless db_products.length.zero?
 
+        config = App.config
         Messaging::Queue
-          .new(App.config.SEARCH_QUEUE_URL, App.config)
+          .new(config.SEARCH_QUEUE_URL, config)
           # .send(search_request_json(input))
           .send(input)
 
         Failure(Response::ApiResult.new(status: :processing, message: { request_id: input[:request_id] }))
-      rescue StandardError => e
-        print_error(e)
+      rescue StandardError
         Failure(Response::ApiResult.new(status: :internal_error, message: SEARCH_ERR))
       end
 

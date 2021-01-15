@@ -54,8 +54,8 @@ group :production do
 end
 
 # WORKERS
-gem 'shoryuken', '~> 5'
 gem 'faye', '~> 1'
+gem 'shoryuken', '~> 5'
 
 # TESTING
 group :test do

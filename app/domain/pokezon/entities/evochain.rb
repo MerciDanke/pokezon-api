@@ -5,6 +5,7 @@ module MerciDanke
     # Domain entity for pokemons' evolution chain
     class Evochain < Dry::Struct
       include Dry.Types
+
       attribute :id, Integer.optional
       attribute :origin_id, Strict::Integer
       attribute :chain_species_name, Strict::String
@@ -12,7 +13,7 @@ module MerciDanke
       attribute :evolves_to_second, String.optional
 
       def to_attr_hash
-        to_hash.reject { |key, _| [:id].include? key }
+        to_hash.reject { |key, _value| [:id].include? key }
       end
     end
   end

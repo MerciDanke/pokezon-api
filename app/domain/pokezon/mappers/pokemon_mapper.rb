@@ -96,11 +96,7 @@ module MerciDanke
 
         def habitat
           habitat = @species_data['habitat']
-          if habitat
-            habitat['name']
-          else
-            nil
-          end
+          habitat ? habitat['name'] : nil
         end
 
         def color
