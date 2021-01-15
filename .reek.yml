@@ -12,3 +12,5 @@ detectors:
     enabled: false
   NilCheck:
     enabled: false
+  DuplicateMethodCall:
+    max_calls: 2

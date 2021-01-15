@@ -37,7 +37,6 @@ module MerciDanke
         config = App.config
         Messaging::Queue
           .new(config.SEARCH_QUEUE_URL, config)
-          # .send(search_request_json(input))
           .send(input)
 
         Failure(Response::ApiResult.new(status: :processing, message: { request_id: input[:request_id] }))

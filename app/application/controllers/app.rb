@@ -61,7 +61,7 @@ module MerciDanke
         routing.on 'product' do
           routing.on String do |origin_id|
             routing.on 'likes' do
-              # PUT /product/{origin_id}/likes
+              # PUT /product/{id}/likes
               routing.put do
                 path_request = Request::LikePath.new(origin_id, request)
                 result = Service::ProductLike.new.call(requested: path_request)

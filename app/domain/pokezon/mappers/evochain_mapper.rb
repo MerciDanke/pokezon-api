@@ -50,12 +50,14 @@ module MerciDanke
 
         def evolves_to_second
           evo_to = @evo_data['chain']['evolves_to'][0]
+          # rubocop:disable Style/EmptyElse
           if evo_to
             ev_second = evo_to['evolves_to'][0]
             return ev_second['species']['name'] if ev_second
           else
             nil
           end
+          # rubocop:enable Style/EmptyElse
         end
       end
     end
