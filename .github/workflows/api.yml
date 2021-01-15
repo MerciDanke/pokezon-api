@@ -32,4 +32,11 @@ jobs:
       - name: Run all specs
         env:
           API_KEY: ${{ secrets.API_KEY }}
-        run: bundle exec rake spec
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_REGION: ${{ secrets.AWS_REGION }}
+          SEARCH_QUEUE: ${{ secrets.SEARCH_QUEUE }}
+          SEARCH_QUEUE_URL: ${{ secrets.SEARCH_QUEUE_URL }}
+        run: |
+          rake worker:run:test &
+          bundle exec rake spec
