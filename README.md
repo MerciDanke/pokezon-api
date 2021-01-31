@@ -18,6 +18,7 @@ Status
 
 ### Classify Pokémon by different conditions
 `GET api/v1/pokemon?color=xx&type_name=xx&habitat=xx&low_h=xx&high_h&low_w=xx&high_w=xx`
+
 Status
 - 200: Return specific pokémon basic info and its popularity (happy)
 - 500: Having trouble accessing the database (bad)
@@ -32,17 +33,20 @@ Status
 - 500: problems storing the products/accessing the database (bad)
 
 ### Sort Google Shopping products
-`GET api/v1/products/{poke_name}?sort=id`   <br\>
-`GET api/v1/products/{poke_name}?sort=likes_DESC(ASC)`   <br\>
-`GET api/v1/products/{poke_name}?sort=rating_DESC(ASC)`  <br\>
-`GET api/v1/products/{poke_name}?sort=price_DESC(ASC)`   <br\>
+`GET api/v1/products/{poke_name}?sort=id`   <br>
+`GET api/v1/products/{poke_name}?sort=likes_DESC(ASC)`   <br>
+`GET api/v1/products/{poke_name}?sort=rating_DESC(ASC)`  <br>
+`GET api/v1/products/{poke_name}?sort=price_DESC(ASC)`   <br>
 - 200: Return sorted products (happy)
 - 404: pokémon not found (sad)
 - 500: problems accessing the database (bad)
 ### Plus likes of Pokémon & Google Shopping products
 `PUT api/v1/pokemon/{id}/likes`
+
 - 200: plus a like to pokemon successfully (happy)
 - 500: Having trouble accessing the database (bad)
+
 `PUT api/v1/product/{id}/likes`
+
 - 200: plus a like to product successfully (happy)
 - 500: Having trouble accessing the database (bad)
